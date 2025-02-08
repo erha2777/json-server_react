@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Routes, Route, Link, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import Home from './routes/Home';
 import CreateDB from './routes/CreateDB';
 import Database from './routes/Database';
