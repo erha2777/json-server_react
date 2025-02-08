@@ -1,11 +1,18 @@
 import { useState } from 'react';
+import { Routes, Route, Link, useNavigate } from 'react-router-dom';
+import Home from './routes/Home';
+import CreateDB from './routes/CreateDB';
+import Database from './routes/Database';
+import NotFound from './routes/NotFound';
 import {
     MenuFoldOutlined,
     MenuUnfoldOutlined,
     AppstoreAddOutlined,
     AppstoreOutlined,
     HddOutlined,
+    HomeOutlined
 } from '@ant-design/icons';
+import type { MenuProps } from 'antd';
 import { Button, Layout, Menu, theme } from 'antd';
 
 const { Header, Sider, Content } = Layout;
@@ -16,12 +23,51 @@ const layoutStyle = {
     width: '100vw',
     height: '100vh',
 };
+// 扩展 MenuItem 类型，添加路由跳转属性
+
+type MenuItem = Required<MenuProps>['items'][number];
+const menuList: MenuItem[] = [
+    {
+        key: '/',
+        icon: <HomeOutlined />,
+        label: '首页',
+    },
+    {
+        key: '/createdb',
+        icon: <AppstoreAddOutlined />,
+        label: '创建数据库',
+    },
+    {
+        key: '/database',
+        icon: <AppstoreOutlined />,
+        label: '数据库',
+        children: [
+            {
+                key: '/database?name=1',
+                icon: <HddOutlined />,
+                label: '数据库1',
+            },
+            {
+                key: '/database?name=2',
+                icon: <HddOutlined />,
+                label: '数据库2',
+            },
+        ],
+    },
+]
+
 function App() {
+    const navigate = useNavigate();
     const [collapsed, setCollapsed] = useState(false);
     const {
         token: { colorBgContainer, borderRadiusLG },
     } = theme.useToken();
 
+    const menuClick = (item:any) => {
+        console.debug(item);
+        
+        navigate(item.key)
+    }
     return (
         <Layout style={layoutStyle}>
             <Sider trigger={null} collapsible collapsed={collapsed}>
@@ -31,30 +77,8 @@ function App() {
                     mode="inline"
                     defaultSelectedKeys={['1']}
                     defaultOpenKeys={['2']}
-                    items={[
-                        {
-                            key: '1',
-                            icon: <AppstoreAddOutlined />,
-                            label: '创建数据库',
-                        },
-                        {
-                            key: '2',
-                            icon: <AppstoreOutlined />,
-                            label: '数据库',
-                            children:[
-                              {
-                                key: '2-1',
-                                icon: <HddOutlined />,
-                                label: '数据库1',
-                              },
-                              {
-                                key: '2-2',
-                                icon: <HddOutlined />,
-                                label: '数据库2',
-                              },
-                            ]
-                        },
-                    ]}
+                    onClick={menuClick}
+                    items={menuList}
                 />
             </Sider>
             <Layout>
@@ -79,7 +103,13 @@ function App() {
                         borderRadius: borderRadiusLG,
                     }}
                 >
-                    Content
+                    {/* 路由配置 */}
+                    <Routes>
+                        <Route path="/" element={<Home />} />
+                        <Route path="/createdb" element={<CreateDB />} />
+                        <Route path="/database" element={<Database />} />
+                        <Route path="*" element={<NotFound />} /> {/* 404 页面 */}
+                    </Routes>
                 </Content>
             </Layout>
         </Layout>

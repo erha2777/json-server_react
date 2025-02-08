@@ -1,7 +1,12 @@
 
-###
-GET  http://localhost:3000/posts?db=db1
+### 获取数据库中所有数据
+GET  http://localhost:3000/db
 
+### 获取指定数据库中所有数据
+GET  http://localhost:3000/db?db=db1
+
+### 获取指定数据库中指定表数据
+GET  http://localhost:3000/posts?db=db1
 
 ###
 GET  http://localhost:3000/posts?db=db2
