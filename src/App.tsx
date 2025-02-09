@@ -1,18 +1,14 @@
 import { useState } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import Home from './routes/Home';
 import CreateDB from './routes/CreateDB';
 import Database from './routes/Database';
 import NotFound from './routes/NotFound';
+import AppMenu from './components/AppMenu';
 import {
     MenuFoldOutlined,
     MenuUnfoldOutlined,
-    AppstoreAddOutlined,
-    AppstoreOutlined,
-    HddOutlined,
-    HomeOutlined
 } from '@ant-design/icons';
-import type { MenuProps } from 'antd';
 import { Button, Layout, Menu, theme } from 'antd';
 
 const { Header, Sider, Content } = Layout;
@@ -25,61 +21,20 @@ const layoutStyle = {
 };
 // 扩展 MenuItem 类型，添加路由跳转属性
 
-type MenuItem = Required<MenuProps>['items'][number];
-const menuList: MenuItem[] = [
-    {
-        key: '/',
-        icon: <HomeOutlined />,
-        label: '首页',
-    },
-    {
-        key: '/createdb',
-        icon: <AppstoreAddOutlined />,
-        label: '创建数据库',
-    },
-    {
-        key: '/database',
-        icon: <AppstoreOutlined />,
-        label: '数据库',
-        children: [
-            {
-                key: '/database?name=1',
-                icon: <HddOutlined />,
-                label: '数据库1',
-            },
-            {
-                key: '/database?name=2',
-                icon: <HddOutlined />,
-                label: '数据库2',
-            },
-        ],
-    },
-]
+
 
 function App() {
-    const navigate = useNavigate();
     const [collapsed, setCollapsed] = useState(false);
     const {
         token: { colorBgContainer, borderRadiusLG },
     } = theme.useToken();
 
-    const menuClick = (item:any) => {
-        console.debug(item);
-        
-        navigate(item.key)
-    }
+
     return (
         <Layout style={layoutStyle}>
             <Sider trigger={null} collapsible collapsed={collapsed}>
                 <div className="demo-logo-vertical" />
-                <Menu
-                    theme="dark"
-                    mode="inline"
-                    defaultSelectedKeys={['1']}
-                    defaultOpenKeys={['2']}
-                    onClick={menuClick}
-                    items={menuList}
-                />
+                <AppMenu></AppMenu>
             </Sider>
             <Layout>
                 <Header style={{ padding: 0, background: colorBgContainer }}>
