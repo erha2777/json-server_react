@@ -1,15 +1,27 @@
 import { Button, Form, Input } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { createDatabase } from '@/store/databaseSlice';
 import type { FormProps } from 'antd';
 type FieldType = {
     name?: string;
+    alias?: string;
 };
 
 export default function CreateDB() {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
-        navigate(`/database?name=${values.name}`);
         console.log('Success:', values);
+        if (values.name) {
+            dispatch(
+                createDatabase({
+                    key: `/database?name=${values.name}`,
+                    label: values.alias || values.name,
+                })
+            );
+            navigate(`/database?name=${values.name}`);
+        }
     };
 
     const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
@@ -27,13 +39,13 @@ export default function CreateDB() {
                 onFinishFailed={onFinishFailed}
                 autoComplete="off"
             >
-                <Form.Item<FieldType> label="Name" name="name" rules={[{ required: true, message: 'Please input your name!' }]}>
+                <Form.Item<FieldType> label="名称" name="name" rules={[{ required: true, message: '请输入名称!' }]}>
                     <Input />
                 </Form.Item>
 
-                {/* <Form.Item<FieldType> label="Password" name="password" rules={[{ required: true, message: 'Please input your password!' }]}>
-                    <Input.Password />
-                </Form.Item> */}
+                <Form.Item<FieldType> label="别名" name="alias">
+                    <Input />
+                </Form.Item>
 
                 <Form.Item label={null}>
                     <Button type="primary" htmlType="submit">

@@ -9,7 +9,7 @@ import {
     MenuFoldOutlined,
     MenuUnfoldOutlined,
 } from '@ant-design/icons';
-import { Button, Layout, Menu, theme } from 'antd';
+import { Button, Layout, theme } from 'antd';
 
 const { Header, Sider, Content } = Layout;
 import './App.scss';
@@ -33,7 +33,9 @@ function App() {
     return (
         <Layout style={layoutStyle}>
             <Sider trigger={null} collapsible collapsed={collapsed}>
-                <div className="demo-logo-vertical" />
+                <div className="demo-logo-vertical">
+                    mock
+                </div>
                 <AppMenu></AppMenu>
             </Sider>
             <Layout>
