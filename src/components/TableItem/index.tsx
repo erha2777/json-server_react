@@ -1,5 +1,5 @@
 import { Table } from 'antd';
-export default function TableItem({ dataSource, tabItemkey }: { dataSource: any[]; tabItemkey: string | number }) {
+export default function TableItem({ dataSource }: { dataSource: any[] }) {
     // 获取数据项
     const getColumns = (list: any[]) => {
         if (list && list.length > 0) {
@@ -16,7 +16,17 @@ export default function TableItem({ dataSource, tabItemkey }: { dataSource: any[
     };
 
     if (dataSource && Array.isArray(dataSource)) {
-        return <Table key={tabItemkey} dataSource={dataSource} columns={getColumns(dataSource)} />;
+        // table组件唯一值默认为key字段
+        return (
+            <Table rowKey={(record) => record.id} dataSource={dataSource} columns={getColumns(dataSource)} />
+            // <Table
+            //     dataSource={dataSource.map((v, i) => {
+            //         v.key = i;
+            //         return v;
+            //     })}
+            //     columns={getColumns(dataSource)}
+            // />
+        );
     }
     return null;
 }
