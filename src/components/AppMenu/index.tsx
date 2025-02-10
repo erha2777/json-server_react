@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Menu } from 'antd';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { setDatabaseList } from '@/store/databaseSlice';
+import { getDatabaseList } from '@/api/database';
 import { RootState } from '@/store/store'; // 导入 RootState 类型
 import type { MenuProps } from 'antd';
 import { AppstoreAddOutlined, AppstoreOutlined, HddOutlined, HomeOutlined } from '@ant-design/icons';
@@ -22,6 +24,7 @@ const menuListData: MenuItem[] = [
 const AppMenu = () => {
     // 获取状态
     const databaseList: any = useSelector((state: RootState) => state.database.list);
+    const dispatch = useDispatch();
     const location = useLocation();
     const navigate = useNavigate();
     // 菜单列表
@@ -42,6 +45,23 @@ const AppMenu = () => {
             },
         ]);
     };
+
+    // 设置数据库数据
+    const setDatabaseListFn = async () => {
+        try {
+            const data = await getDatabaseList();
+            if (data.status === 200) {
+                let list = data.data.databases.filter((name: string) => name !== 'default');
+                dispatch(setDatabaseList({ list }));
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+    // 获取数据库列表
+    useEffect(() => {
+        setDatabaseListFn();
+    }, []);
 
     // 根据当前路径计算需要展开的父菜单
     useEffect(() => {

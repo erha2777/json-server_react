@@ -1,7 +1,8 @@
 import { Button, Form, Input } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { createDatabase } from '@/store/databaseSlice';
+import { createDatabase as addDatabase } from '@/store/databaseSlice';
+import { createDatabase } from '@/api/database';
 import type { FormProps } from 'antd';
 type FieldType = {
     name?: string;
@@ -11,16 +12,25 @@ type FieldType = {
 export default function CreateDB() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
+    const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
         console.log('Success:', values);
         if (values.name) {
-            dispatch(
-                createDatabase({
-                    key: `/database?name=${values.name}`,
-                    label: values.alias || values.name,
-                })
-            );
-            navigate(`/database?name=${values.name}`);
+            try {
+                const data = await createDatabase({
+                    dbName: values.name,
+                });
+                if(data.status === 200) {
+                    dispatch(
+                        addDatabase({
+                            key: `/database?name=${values.name}`,
+                            label: values.alias || values.name,
+                        })
+                    );
+                    navigate(`/database?name=${values.name}`);
+                }
+            } catch (error) {
+                console.error(error);
+            }
         }
     };
 

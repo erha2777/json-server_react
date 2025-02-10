@@ -17,7 +17,7 @@ export default function TableCard({ data }: { data: tableDataType }) {
     };
 
     return (
-        <Card title={data.tableName} extra={<a href="#">新增数据</a>} style={{ minWidth: 500 }}>
+        <Card title={data.tableName} extra={<a href="#">新增数据</a>} style={{ minWidth: 'calc((100% - 16px * 3) / 4)' }}>
             {/* table组件唯一值默认为key字段 */}
             <Table rowKey={(record) => record.id} dataSource={data.data} columns={getColumns(data.data)} />
             {/* <Table

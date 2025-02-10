@@ -5,10 +5,7 @@ import CreateDB from './routes/CreateDB';
 import Database from './routes/Database';
 import NotFound from './routes/NotFound';
 import AppMenu from './components/AppMenu';
-import {
-    MenuFoldOutlined,
-    MenuUnfoldOutlined,
-} from '@ant-design/icons';
+import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import { Button, Layout, theme } from 'antd';
 
 const { Header, Sider, Content } = Layout;
@@ -21,21 +18,17 @@ const layoutStyle = {
 };
 // 扩展 MenuItem 类型，添加路由跳转属性
 
-
-
 function App() {
     const [collapsed, setCollapsed] = useState(false);
+
     const {
         token: { colorBgContainer, borderRadiusLG },
     } = theme.useToken();
 
-
     return (
         <Layout style={layoutStyle}>
             <Sider trigger={null} collapsible collapsed={collapsed}>
-                <div className="demo-logo-vertical">
-                    mock
-                </div>
+                <div className="demo-logo-vertical">mock</div>
                 <AppMenu></AppMenu>
             </Sider>
             <Layout>

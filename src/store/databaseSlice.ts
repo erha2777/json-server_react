@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-
 // 定义状态的类型
 interface DatabaseState {
     list: any[];
@@ -8,16 +7,7 @@ interface DatabaseState {
 
 // 初始状态
 const initialState: DatabaseState = {
-    list: [
-        {
-            key: '/database?name=db1',
-            label: '数据库1',
-        },
-        {
-            key: '/database?name=db2',
-            label: '数据库2',
-        },
-    ],
+    list: [],
 };
 
 // 创建 Slice
@@ -32,11 +22,22 @@ const databaseSlice = createSlice({
         deleteDatabase(state, action: PayloadAction<{ index: number }>) {
             state.list.splice(action.payload.index, 1)
         },
+        setDatabaseList(state, action: PayloadAction<{ list: string[] }>) {
+            console.debug('setDatabaseList',action.payload.list);
+            state.list.splice(0, state.list.length)
+            let list = action.payload.list.map((dbname: string) => {
+                return {
+                    key: `/database?name=${dbname}`,
+                    label: dbname,
+                }
+            })
+            state.list.push(...list)
+        },
     },
 });
 
 // 导出 action
-export const { createDatabase, deleteDatabase } = databaseSlice.actions;
+export const { createDatabase, deleteDatabase, setDatabaseList } = databaseSlice.actions;
 
 // 导出 reducer
 export default databaseSlice.reducer;

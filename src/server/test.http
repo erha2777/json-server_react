@@ -11,6 +11,9 @@ GET  http://localhost:3000/posts?db=db1
 ###
 GET  http://localhost:3000/posts?db=db2
 
+### 获取所有数据库列表
+GET  http://localhost:3000/databases
+
 ### 新增表
 POST  http://localhost:3000/addTable?db=db1
 Content-Type: application/json

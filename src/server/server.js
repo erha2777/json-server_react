@@ -21,6 +21,41 @@ server.use(middlewares);
 server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({ extended: true }));
 
+// 添加获取所有数据库的接口
+server.get('/databases', (req, res) => {
+  const dbPath = path.join(__dirname, 'dbs');
+
+  if (!fs.existsSync(dbPath)) {
+    return res.status(404).json({
+      status: 404,
+      message: 'Databases directory not found',
+      data: null
+    });
+  }
+
+  try {
+    const files = fs.readdirSync(dbPath);
+    const databases = files
+      .filter(file => path.extname(file) === '.json')
+      .map(file => path.basename(file, '.json'));
+
+    res.json({
+      status: 200,
+      message: 'Databases retrieved successfully',
+      data: {
+        databases: databases
+      }
+    });
+  } catch (error) {
+    console.error('Error retrieving databases:', error);
+    res.status(500).json({
+      status: 500,
+      message: 'Internal server error',
+      data: null
+    });
+  }
+});
+
 // 中间件：动态加载数据库
 server.use((req, res, next) => {
   const dbName = req.query.db || 'default'; // 通过查询参数指定数据库名称，例如 ?db=db1,默认使用 default.json

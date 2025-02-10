@@ -7,6 +7,25 @@ export function getDatabaseData(db: string) {
     })
 };
 
+
+export function getDatabaseList() {
+    return request({
+        method: 'get',
+        url: `/databases`
+    })
+};
+
+export function createDatabase(data: { dbName: string, initialData?: any }) {
+    return request({
+        method: 'post',
+        url: `/createDatabase`,
+        data: {
+            dbName: data.dbName,
+            initialData: data.initialData || {}
+        }
+    })
+};
+
 export function createTable(data: { db: string, tableName: string, data?: any[] }) {
     return request({
         method: 'post',
