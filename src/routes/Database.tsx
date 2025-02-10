@@ -1,17 +1,89 @@
-import { Card, Space } from 'antd';
+import { useEffect, useState } from 'react';
+import { Card, Button, Flex, Table } from 'antd';
+import { useLocation } from 'react-router-dom';
+import { getDatabaseData } from '@/api/database';
+// import TableItem from '@/components/TableItem';
+
+function TableItem({ dataSource }: { dataSource: any[] }) {
+    // 获取数据项
+    const getColumns = (list: any[]) => {
+        if (list && list.length > 0) {
+            return Object.keys(list[0]).map((key: string) => {
+                return {
+                    title: key,
+                    dataIndex: key,
+                    key: key,
+                };
+            });
+        } else {
+            return [];
+        }
+    };
+
+    if (dataSource && Array.isArray(dataSource)) {
+        // table组件唯一值默认为key字段
+        return (
+            <Table
+                rowKey={record=>record.id}
+                dataSource={dataSource}
+                columns={getColumns(dataSource)}
+            />
+            // <Table
+            //     dataSource={dataSource.map((v, i) => {
+            //         v.key = i;
+            //         return v;
+            //     })}
+            //     columns={getColumns(dataSource)}
+            // />
+        );
+    }
+    return null;
+}
+
 export default function Database() {
+    const location = useLocation();
+    const [database, setDatabase] = useState<any>({});
+    const getDatabaseDataFn = async (db: string) => {
+        try {
+            const data = await getDatabaseData(db);
+            if (data.status === 200) {
+                setDatabase(data.data);
+            }
+            console.debug('data', data);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    // 根据当前路径计算需要展开的父菜单
+    useEffect(() => {
+        // 解析查询参数
+        const queryParams = new URLSearchParams(location.search);
+        const name = queryParams.get('name'); // 获取 name 参数的值
+        if (name) {
+            getDatabaseDataFn(name);
+        }
+    }, [location]);
+
+    // 数据库里面的表列表
+    const tableList = Object.keys(database).map((tabName, index) =>
+        Array.isArray(database[tabName]) ? (
+            <Card key={index} title={tabName} extra={<a href="#">More</a>} style={{ minWidth: 500 }}>
+                <TableItem dataSource={database[tabName]}></TableItem>
+            </Card>
+        ) : null
+    );
     return (
-        <Space size={16} wrap>
-            <Card title="数据表1" extra={<a href="#">More</a>} style={{ minWidth: 300 }}>
-                <p>Card content</p>
-                <p>Card content</p>
-                <p>Card content</p>
-            </Card>
-            <Card title="数据表2" extra={<a href="#">More</a>} style={{ minWidth: 300 }}>
-                <p>Card content</p>
-                <p>Card content</p>
-                <p>Card content</p>
-            </Card>
-        </Space>
+        <>
+            <Flex gap="16px" vertical>
+                <Flex justify="flex-end">
+                    <Button type="primary">创建表</Button>
+                </Flex>
+
+                <Flex gap="16px" wrap align="start">
+                    {tableList}
+                </Flex>
+            </Flex>
+        </>
     );
 }

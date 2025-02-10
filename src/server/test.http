@@ -10,3 +10,24 @@ GET  http://localhost:3000/posts?db=db1
 
 ###
 GET  http://localhost:3000/posts?db=db2
+
+### 新增表
+POST  http://localhost:3000/addTable?db=db1
+Content-Type: application/json
+
+{ 
+    "tableName": "order", 
+    "data": [
+      { "id": 1, "name": "Order 1" },
+      { "id": 2, "name": "Order 2" }
+    ]
+}
+
+### 新增表数据
+POST  http://localhost:3000/posts?db=db1
+Content-Type: application/json
+
+{ 
+    "title": "json-server",
+    "author": "typicode"
+}

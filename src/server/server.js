@@ -1,6 +1,7 @@
 const jsonServer = require('json-server');
 const fs = require('fs');
 const path = require('path');
+const bodyParser = require('body-parser');
 
 const server = jsonServer.create();
 const middlewares = jsonServer.defaults();
@@ -15,6 +16,10 @@ if (!fs.existsSync(DB_DIR)) {
 
 // 使用默认中间件
 server.use(middlewares);
+
+// 添加 body-parser 中间件
+server.use(bodyParser.json());
+server.use(bodyParser.urlencoded({ extended: true }));
 
 // 中间件：动态加载数据库
 server.use((req, res, next) => {
@@ -42,6 +47,61 @@ server.use((req, res, next) => {
   // 使用动态路由器
   req.router = router; // 将路由器存储到 req 对象中，供后续中间件使用
   next();
+});
+
+// 添加动态新增表的接口
+server.post('/addTable', (req, res) => {
+  const { tableName, data } = req.body;
+
+  // 获取当前使用的数据库名称
+  const dbName = req.query.db || 'default';
+  const dbPath = path.join(DB_DIR, `${dbName}.json`);
+
+  // 检查数据库文件是否存在
+  if (!fs.existsSync(dbPath)) {
+    return res.status(404).json({
+      status: 404,
+      message: 'Database not found',
+      data: null
+    });
+  }
+
+  try {
+    // 读取当前数据库内容
+    const dbContent = JSON.parse(fs.readFileSync(dbPath, 'utf8'));
+
+    // 检查表是否已经存在
+    if (dbContent[tableName]) {
+      return res.status(400).json({
+        status: 400,
+        message: 'Table already exists',
+        data: null
+      });
+    }
+
+    // 添加新表
+    dbContent[tableName] = data;
+
+    // 将更新后的内容写回数据库文件
+    fs.writeFileSync(dbPath, JSON.stringify(dbContent, null, 2));
+
+    // 重新加载路由
+    req.router = jsonServer.router(dbPath);
+
+    // 返回成功响应
+    res.json({
+      status: 200,
+      message: 'Table added successfully',
+      data: { tableName }
+    });
+  } catch (error) {
+    console.error('Error adding table:', error);
+    res.status(500).json({
+      status: 500,
+      message: 'Internal server error',
+      data: null
+    });
+  }
 });
 
 // 中间件：统一封装响应格式
