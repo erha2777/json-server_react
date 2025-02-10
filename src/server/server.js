@@ -104,6 +104,40 @@ server.post('/addTable', (req, res) => {
   }
 });
 
+// 添加创建新数据库的接口
+server.post('/createDatabase', (req, res) => {
+  const { dbName, initialData } = req.body;
+  const dbPath = path.join(DB_DIR, `${dbName}.json`);
+
+  if (fs.existsSync(dbPath)) {
+    return res.status(400).json({
+      status: 400,
+      message: 'Database already exists',
+      data: null
+    });
+  }
+
+  try {
+    if (typeof initialData !== 'object' || initialData === null) {
+      throw new Error('Initial data must be a valid JSON object');
+    }
+
+    fs.writeFileSync(dbPath, JSON.stringify(initialData, null, 2));
+    res.json({
+      status: 200,
+      message: 'Database created successfully',
+      data: { dbName }
+    });
+  } catch (error) {
+    console.error('Error creating database:', error);
+    res.status(500).json({
+      status: 500,
+      message: 'Internal server error',
+      data: null
+    });
+  }
+});
+
 // 中间件：统一封装响应格式
 server.use((req, res, next) => {
   // 保存原始的 res.send 方法
