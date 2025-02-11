@@ -51,7 +51,22 @@ export default function CreateDB() {
                 onFinishFailed={onFinishFailed}
                 autoComplete="off"
             >
-                <Form.Item<FieldType> label="名称" name="name" rules={[{ required: true, message: '请输入名称!' }]}>
+                <Form.Item<FieldType>
+                    label="名称"
+                    name="name"
+                    rules={[
+                        { required: true, message: '请输入名称!' },
+                        {
+                            validator: (_, value) => {
+                                if (/^(?=.*[a-zA-Z])[a-zA-Z0-9]+$/.test(value)) {
+                                    return Promise.resolve();
+                                } else {
+                                    return Promise.reject(new Error('名称必须包含字母，可以包含数字，但不能只有数字!'));
+                                }
+                            },
+                        },
+                    ]}
+                >
                     <Input />
                 </Form.Item>
 
