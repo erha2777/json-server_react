@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-
+import type { databaseType } from '@/types/database'
 // 定义状态的类型
 interface DatabaseState {
     list: any[];
@@ -22,13 +22,15 @@ const databaseSlice = createSlice({
         deleteDatabase(state, action: PayloadAction<{ index: number }>) {
             state.list.splice(action.payload.index, 1)
         },
-        setDatabaseList(state, action: PayloadAction<{ list: string[] }>) {
-            console.debug('setDatabaseList',action.payload.list);
+        setDatabaseList(state, action: PayloadAction<{ list: databaseType[] }>) {
+            console.debug('setDatabaseList', action.payload.list);
             state.list.splice(0, state.list.length)
-            let list = action.payload.list.map((dbname: string) => {
+            let list = action.payload.list.map((dbItem: databaseType) => {
                 return {
-                    key: `/database?name=${dbname}`,
-                    label: dbname,
+                    key: `/database?name=${dbItem.name}`,
+                    label: dbItem.alias,
+                    created_at: dbItem.created_at,
+                    updated_at: dbItem.updated_at,
                 }
             })
             state.list.push(...list)

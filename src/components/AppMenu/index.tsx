@@ -6,6 +6,7 @@ import { setDatabaseList } from '@/store/databaseSlice';
 import { getDatabaseList } from '@/api/database';
 import { RootState } from '@/store/store'; // 导入 RootState 类型
 import type { MenuProps } from 'antd';
+// import type { databaseType } from '@/types/database'
 import { AppstoreAddOutlined, AppstoreOutlined, HddOutlined, HomeOutlined } from '@ant-design/icons';
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -51,7 +52,8 @@ const AppMenu = () => {
         try {
             const data = await getDatabaseList();
             if (data.status === 200) {
-                let list = data.data.databases.filter((name: string) => name !== 'default');
+                let list = data.data.databases;
+                // let list = data.data.databases.filter((item: databaseType) => item.name !== 'default');
                 dispatch(setDatabaseList({ list }));
             }
         } catch (error) {

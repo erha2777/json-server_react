@@ -18,8 +18,9 @@ export default function CreateDB() {
             try {
                 const data = await createDatabase({
                     dbName: values.name,
+                    alias: values.alias,
                 });
-                if(data.status === 200) {
+                if (data.status === 200) {
                     dispatch(
                         addDatabase({
                             key: `/database?name=${values.name}`,

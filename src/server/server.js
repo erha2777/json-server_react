@@ -21,29 +21,32 @@ server.use(middlewares);
 server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({ extended: true }));
 
-// 添加获取所有数据库的接口
+// 获取所有数据库的接口
 server.get('/databases', (req, res) => {
-  const dbPath = path.join(__dirname, 'dbs');
+  const dbListPath = path.join(__dirname, 'databases.json');
 
-  if (!fs.existsSync(dbPath)) {
+  if (!fs.existsSync(dbListPath)) {
     return res.status(404).json({
       status: 404,
-      message: 'Databases directory not found',
+      message: 'Databases list file not found',
       data: null
     });
   }
 
   try {
-    const files = fs.readdirSync(dbPath);
-    const databases = files
-      .filter(file => path.extname(file) === '.json')
-      .map(file => path.basename(file, '.json'));
+    const dbListContent = fs.readFileSync(dbListPath, 'utf8');
+    const databases = JSON.parse(dbListContent).databases;
 
     res.json({
       status: 200,
       message: 'Databases retrieved successfully',
       data: {
-        databases: databases
+        databases: databases.map(db => ({
+          name: db.name,
+          alias: db.alias || db.name, // 如果 alias 不存在，使用 name 作为默认值
+          created_at: db.created_at,
+          updated_at: db.updated_at
+        }))
       }
     });
   } catch (error) {
@@ -84,7 +87,7 @@ server.use((req, res, next) => {
   next();
 });
 
-// 添加动态新增表的接口
+// 动态新增表的接口
 server.post('/addTable', (req, res) => {
   const { tableName, data } = req.body;
 
@@ -139,10 +142,11 @@ server.post('/addTable', (req, res) => {
   }
 });
 
-// 添加创建新数据库的接口
+// 创建新数据库的接口
 server.post('/createDatabase', (req, res) => {
-  const { dbName, initialData } = req.body;
+  const { dbName, alias, initialData } = req.body;
   const dbPath = path.join(DB_DIR, `${dbName}.json`);
+  const dbListPath = path.join(__dirname, 'databases.json');
 
   if (fs.existsSync(dbPath)) {
     return res.status(400).json({
@@ -158,6 +162,24 @@ server.post('/createDatabase', (req, res) => {
     }
 
     fs.writeFileSync(dbPath, JSON.stringify(initialData, null, 2));
+
+    const currentTime = new Date().toISOString();
+    const newDbEntry = {
+      name: dbName,
+      alias: alias || dbName, // 如果 alias 未提供，则使用 dbName 作为默认值,
+      created_at: currentTime,
+      updated_at: currentTime
+    };
+
+    let dbList = [];
+    if (fs.existsSync(dbListPath)) {
+      const existingList = fs.readFileSync(dbListPath, 'utf8');
+      dbList = JSON.parse(existingList).databases;
+    }
+
+    dbList.push(newDbEntry);
+    fs.writeFileSync(dbListPath, JSON.stringify({ databases: dbList }, null, 2));
+
     res.json({
       status: 200,
       message: 'Database created successfully',
@@ -165,6 +187,97 @@ server.post('/createDatabase', (req, res) => {
     });
   } catch (error) {
     console.error('Error creating database:', error);
+    res.status(500).json({
+      status: 500,
+      message: 'Internal server error',
+      data: null
+    });
+  }
+});
+
+// 删除数据库的接口
+server.delete('/deleteDatabase', (req, res) => {
+  const { dbName } = req.body;
+  const dbPath = path.join(DB_DIR, `${dbName}.json`);
+  const dbListPath = path.join(__dirname, 'databases.json');
+
+  if (!fs.existsSync(dbPath)) {
+    return res.status(404).json({
+      status: 404,
+      message: 'Database not found',
+      data: null
+    });
+  }
+
+  try {
+    fs.unlinkSync(dbPath);
+
+    let dbList = [];
+    if (fs.existsSync(dbListPath)) {
+      const existingList = fs.readFileSync(dbListPath, 'utf8');
+      dbList = JSON.parse(existingList).databases;
+    }
+
+    const updatedList = dbList.filter(db => db.name !== dbName);
+    fs.writeFileSync(dbListPath, JSON.stringify({ databases: updatedList }, null, 2));
+
+    res.json({
+      status: 200,
+      message: 'Database deleted successfully',
+      data: { dbName }
+    });
+  } catch (error) {
+    console.error('Error deleting database:', error);
+    res.status(500).json({
+      status: 500,
+      message: 'Internal server error',
+      data: null
+    });
+  }
+});
+
+// 更新数据库的接口
+server.put('/updateDatabase', (req, res) => {
+  const { dbName, updatedData } = req.body;
+  const dbPath = path.join(DB_DIR, `${dbName}.json`);
+  const dbListPath = path.join(__dirname, 'databases.json');
+
+  if (!fs.existsSync(dbPath)) {
+    return res.status(404).json({
+      status: 404,
+      message: 'Database not found',
+      data: null
+    });
+  }
+
+  try {
+    const currentContent = JSON.parse(fs.readFileSync(dbPath, 'utf8'));
+    const updatedContent = { ...currentContent, ...updatedData };
+    fs.writeFileSync(dbPath, JSON.stringify(updatedContent, null, 2));
+
+    let dbList = [];
+    if (fs.existsSync(dbListPath)) {
+      const existingList = fs.readFileSync(dbListPath, 'utf8');
+      dbList = JSON.parse(existingList).databases;
+    }
+
+    const currentTime = new Date().toISOString();
+    const updatedList = dbList.map(db => {
+      if (db.name === dbName) {
+        return { ...db, updated_at: currentTime };
+      }
+      return db;
+    });
+
+    fs.writeFileSync(dbListPath, JSON.stringify({ databases: updatedList }, null, 2));
+
+    res.json({
+      status: 200,
+      message: 'Database updated successfully',
+      data: { dbName }
+    });
+  } catch (error) {
+    console.error('Error updating database:', error);
     res.status(500).json({
       status: 500,
       message: 'Internal server error',

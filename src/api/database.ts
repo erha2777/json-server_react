@@ -15,12 +15,13 @@ export function getDatabaseList() {
     })
 };
 
-export function createDatabase(data: { dbName: string, initialData?: any }) {
+export function createDatabase(data: { dbName: string, alias?: string, initialData?: any }) {
     return request({
         method: 'post',
         url: `/createDatabase`,
         data: {
             dbName: data.dbName,
+            alias: data.alias || data.dbName,
             initialData: data.initialData || {}
         }
     })
