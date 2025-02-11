@@ -1,8 +1,9 @@
 import React from 'react';
 import type { FormProps } from 'antd';
 import { Modal, Button, Form, Input } from 'antd';
+import { useDispatch } from 'react-redux';
 import { createTable } from '@/api/database';
-
+import { addTable } from '@/store/databaseSlice';
 interface ModalProps {
     open: boolean;
     onCancel: () => void;
@@ -10,23 +11,35 @@ interface ModalProps {
     currentDB: string;
 }
 type FieldType = {
-    name?: string;
+    name: string;
+    alias?: string;
+    description?: string;
 };
 
 const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
     console.log('Failed:', errorInfo);
 };
 const CreatTableModal: React.FC<ModalProps> = ({ open, onCancel, onOk, currentDB }) => {
+    const dispatch = useDispatch();
+
     const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
         console.log('Success:', values);
         if (values.name) {
             try {
+                let metadata = {
+                    alias: values.alias || values.name,
+                    description: values.description || '表的简介',
+                };
                 const data = await createTable({
                     db: currentDB,
                     tableName: values.name,
+                    metadata,
                 });
-                if(data.status===200) {
-                    onOk() 
+                console.debug('createTable', data);
+
+                if (data.status === 200) {
+                    dispatch(addTable({ tableName: values.name, metadata }));
+                    onOk();
                 }
             } catch (error) {
                 console.error(error);
@@ -34,14 +47,7 @@ const CreatTableModal: React.FC<ModalProps> = ({ open, onCancel, onOk, currentDB
         }
     };
     return (
-        <Modal
-            title="创建表"
-            open={open}
-            onCancel={onCancel}
-            cancelText="取消"
-            okText="确认"
-            footer={false}
-        >
+        <Modal title="创建表" open={open} onCancel={onCancel} cancelText="取消" okText="确认" footer={false}>
             <Form
                 name="basic"
                 labelCol={{ span: 6 }}
@@ -68,6 +74,14 @@ const CreatTableModal: React.FC<ModalProps> = ({ open, onCancel, onOk, currentDB
                         },
                     ]}
                 >
+                    <Input />
+                </Form.Item>
+
+                <Form.Item<FieldType> label="别名" name="alias">
+                    <Input />
+                </Form.Item>
+
+                <Form.Item<FieldType> label="简介" name="description">
                     <Input />
                 </Form.Item>
 

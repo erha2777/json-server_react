@@ -43,7 +43,8 @@ server.get('/databases', (req, res) => {
       data: {
         databases: databases.map(db => ({
           name: db.name,
-          alias: db.alias || db.name, // 如果 alias 不存在，使用 name 作为默认值
+          alias: db.alias || db.name,
+          tables: db.tables || {},
           created_at: db.created_at,
           updated_at: db.updated_at
         }))
@@ -89,11 +90,12 @@ server.use((req, res, next) => {
 
 // 动态新增表的接口
 server.post('/addTable', (req, res) => {
-  const { tableName, data } = req.body;
+  const { tableName, data, metadata } = req.body;
 
   // 获取当前使用的数据库名称
   const dbName = req.query.db || 'default';
   const dbPath = path.join(DB_DIR, `${dbName}.json`);
+  const dbListPath = path.join(__dirname, 'databases.json');
 
   // 检查数据库文件是否存在
   if (!fs.existsSync(dbPath)) {
@@ -123,6 +125,27 @@ server.post('/addTable', (req, res) => {
     // 将更新后的内容写回数据库文件
     fs.writeFileSync(dbPath, JSON.stringify(dbContent, null, 2));
 
+    // 更新 databases.json 中的 tables 信息
+    if (fs.existsSync(dbListPath)) {
+      const dbListContent = fs.readFileSync(dbListPath, 'utf8');
+      let dbList = JSON.parse(dbListContent).databases;
+
+      dbList = dbList.map(db => {
+        if (db.name === dbName) {
+          return {
+            ...db,
+            tables: {
+              ...db.tables,
+              [tableName]: metadata || {}
+            }
+          };
+        }
+        return db;
+      });
+
+      fs.writeFileSync(dbListPath, JSON.stringify({ databases: dbList }, null, 2));
+    }
+
     // 重新加载路由
     req.router = jsonServer.router(dbPath);
 
@@ -130,7 +153,7 @@ server.post('/addTable', (req, res) => {
     res.json({
       status: 200,
       message: 'Table added successfully',
-      data: { tableName }
+      data: { [tableName]: metadata }
     });
   } catch (error) {
     console.error('Error adding table:', error);
@@ -144,7 +167,7 @@ server.post('/addTable', (req, res) => {
 
 // 创建新数据库的接口
 server.post('/createDatabase', (req, res) => {
-  const { dbName, alias, initialData } = req.body;
+  const { dbName, alias, initialData, tables } = req.body;
   const dbPath = path.join(DB_DIR, `${dbName}.json`);
   const dbListPath = path.join(__dirname, 'databases.json');
 
@@ -166,7 +189,8 @@ server.post('/createDatabase', (req, res) => {
     const currentTime = new Date().toISOString();
     const newDbEntry = {
       name: dbName,
-      alias: alias || dbName, // 如果 alias 未提供，则使用 dbName 作为默认值,
+      alias: alias || dbName,
+      tables: tables || {},
       created_at: currentTime,
       updated_at: currentTime
     };
@@ -238,7 +262,7 @@ server.delete('/deleteDatabase', (req, res) => {
 
 // 更新数据库的接口
 server.put('/updateDatabase', (req, res) => {
-  const { dbName, updatedData } = req.body;
+  const { dbName, updatedData, updatedTables } = req.body;
   const dbPath = path.join(DB_DIR, `${dbName}.json`);
   const dbListPath = path.join(__dirname, 'databases.json');
 
@@ -264,7 +288,11 @@ server.put('/updateDatabase', (req, res) => {
     const currentTime = new Date().toISOString();
     const updatedList = dbList.map(db => {
       if (db.name === dbName) {
-        return { ...db, updated_at: currentTime };
+        return {
+          ...db,
+          updated_at: currentTime,
+          tables: updatedTables || db.tables
+        };
       }
       return db;
     });

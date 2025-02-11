@@ -1,5 +1,6 @@
 import { Table, Card } from 'antd';
 import type { tableDataType } from '@/routes/Database';
+import './index.scss';
 export default function TableCard({ data }: { data: tableDataType }) {
     // 获取数据项
     const getColumns = (list: any[]) => {
@@ -17,16 +18,21 @@ export default function TableCard({ data }: { data: tableDataType }) {
     };
 
     return (
-        <Card title={data.tableName} extra={<a href="#">新增数据</a>} style={{ minWidth: 'calc((100% - 16px * 3) / 4)' }}>
+        <Card
+            title={data.metadata.alias}
+            extra={<a href="#">新增数据</a>}
+            style={{ minWidth: 'calc((100% - 16px * 3) / 4)' }}
+        >
             {/* table组件唯一值默认为key字段 */}
             <Table rowKey={(record) => record.id} dataSource={data.data} columns={getColumns(data.data)} />
             {/* <Table
-                dataSource={dataSource.map((v, i) => {
-                    v.key = i;
-                    return v;
-                })}
-                columns={getColumns(dataSource)}
-            /> */}
+                    dataSource={dataSource.map((v, i) => {
+                        v.key = i;
+                        return v;
+                    })}
+                    columns={getColumns(dataSource)}
+                /> */}
+            {data.metadata.description && <div className="desc">{data.metadata.description}</div>}
         </Card>
     );
 }

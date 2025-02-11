@@ -3,4 +3,5 @@ export interface databaseType {
     alias?: string,
     created_at?: Date,
     updated_at?: Date,
+    tables?: any,
 }

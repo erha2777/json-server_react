@@ -27,13 +27,14 @@ export function createDatabase(data: { dbName: string, alias?: string, initialDa
     })
 };
 
-export function createTable(data: { db: string, tableName: string, data?: any[] }) {
+export function createTable(data: { db: string, tableName: string, data?: any[], metadata?: any }) {
     return request({
         method: 'post',
         url: `/addTable?db=${data.db}`,
         data: {
             tableName: data.tableName,
-            data: data.data || []
+            data: data.data || [],
+            metadata: data.metadata || {},
         }
     })
 };

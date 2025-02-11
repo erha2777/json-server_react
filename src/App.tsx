@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import Home from './routes/Home';
 import CreateDB from './routes/CreateDB';
 import Database from './routes/Database';
@@ -7,6 +8,8 @@ import NotFound from './routes/NotFound';
 import AppMenu from './components/AppMenu';
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import { Button, Layout, theme } from 'antd';
+import { setDatabaseList } from '@/store/databaseSlice';
+import { getDatabaseList } from '@/api/database';
 
 const { Header, Sider, Content } = Layout;
 import './App.scss';
@@ -20,10 +23,32 @@ const layoutStyle = {
 
 function App() {
     const [collapsed, setCollapsed] = useState(false);
+    const dispatch = useDispatch();
+    const location = useLocation();
 
     const {
         token: { colorBgContainer, borderRadiusLG },
     } = theme.useToken();
+
+    // 设置数据库数据
+    const setDatabaseListFn = async (db?: string) => {
+        try {
+            const data = await getDatabaseList();
+            if (data.status === 200) {
+                let list = data.data.databases;
+                // let list = data.data.databases.filter((item: databaseType) => item.name !== 'default');
+                dispatch(setDatabaseList({ list, db }));
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+    // 获取数据库列表
+    useEffect(() => {
+        const queryParams = new URLSearchParams(location.search);
+        const name = queryParams.get('name') || ''; // 获取 name 参数的值
+        setDatabaseListFn(name);
+    }, []);
 
     return (
         <Layout style={layoutStyle}>
