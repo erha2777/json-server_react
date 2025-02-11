@@ -7,6 +7,7 @@ import { setCurrentDatabase } from '@/store/databaseSlice';
 import { getDatabaseData } from '@/api/database';
 import TableCard from '@/components/TableCard';
 import CreatTableModal from '@/components/CreatTableModal';
+import MockDataGeneratorModal from '@/components/MockDataGeneratorModal';
 import type { databaseType } from '@/types/database';
 
 export interface tableDataType {
@@ -76,6 +77,18 @@ export default function Database() {
         setIsModalOpen(false);
     };
 
+    // mock生成器弹窗
+    const [isModalOpen2, setIsModalOpen2] = useState(false);
+    const showModal2 = () => {
+        setIsModalOpen2(true);
+    };
+    const handleOk2 = () => {
+        setIsModalOpen2(false);
+    };
+    const handleCancel2 = () => {
+        setIsModalOpen2(false);
+    };
+
     // 根据当前路径计算需要展开的父菜单
     useEffect(() => {
         // 解析查询参数
@@ -96,7 +109,7 @@ export default function Database() {
     }, [currentDBData]);
 
     // 数据库里面的表列表
-    const tableList = database.tableList && database.tableList.map((table, index) => <TableCard key={index} data={table}></TableCard>);
+    const tableList = database.tableList && database.tableList.map((table, index) => <TableCard key={index} data={table} addData={showModal2}></TableCard>);
     return (
         <>
             <Flex gap="16px" vertical>
@@ -111,6 +124,7 @@ export default function Database() {
                 </Flex>
             </Flex>
             <CreatTableModal open={isModalOpen} onOk={handleOk} onCancel={handleCancel} currentDB={currentDB}></CreatTableModal>
+            <MockDataGeneratorModal open={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2}></MockDataGeneratorModal>
         </>
     );
 }

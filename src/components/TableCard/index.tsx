@@ -1,7 +1,7 @@
 import { Table, Card } from 'antd';
 import type { tableDataType } from '@/routes/Database';
 import './index.scss';
-export default function TableCard({ data }: { data: tableDataType }) {
+export default function TableCard({ data, addData }: { data: tableDataType; addData: () => void }) {
     // 获取数据项
     const getColumns = (list: any[]) => {
         if (list && list.length > 0) {
@@ -20,7 +20,11 @@ export default function TableCard({ data }: { data: tableDataType }) {
     return (
         <Card
             title={data.metadata.alias}
-            extra={<a href="#">新增数据</a>}
+            extra={
+                <a href="#" onClick={addData}>
+                    新增数据
+                </a>
+            }
             style={{ minWidth: 'calc((100% - 16px * 3) / 4)' }}
         >
             {/* table组件唯一值默认为key字段 */}
