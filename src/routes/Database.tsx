@@ -87,13 +87,16 @@ export default function Database() {
     }, [location]);
 
     useEffect(() => {
-        getDatabaseDataFn(currentDB);
+        // 解析查询参数
+        const queryParams = new URLSearchParams(location.search);
+        const name = queryParams.get('name'); // 获取 name 参数的值
+        if (name) {
+            getDatabaseDataFn(name);
+        }
     }, [currentDBData]);
 
     // 数据库里面的表列表
-    const tableList =
-        database.tableList &&
-        database.tableList.map((table, index) => <TableCard key={index} data={table}></TableCard>);
+    const tableList = database.tableList && database.tableList.map((table, index) => <TableCard key={index} data={table}></TableCard>);
     return (
         <>
             <Flex gap="16px" vertical>
@@ -107,12 +110,7 @@ export default function Database() {
                     {tableList}
                 </Flex>
             </Flex>
-            <CreatTableModal
-                open={isModalOpen}
-                onOk={handleOk}
-                onCancel={handleCancel}
-                currentDB={currentDB}
-            ></CreatTableModal>
+            <CreatTableModal open={isModalOpen} onOk={handleOk} onCancel={handleCancel} currentDB={currentDB}></CreatTableModal>
         </>
     );
 }

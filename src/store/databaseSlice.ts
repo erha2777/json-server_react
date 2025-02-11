@@ -18,8 +18,14 @@ const databaseSlice = createSlice({
     initialState, // 初始状态
     reducers: {
         // 定义 reducer 和 action
-        createDatabase(state, action: PayloadAction<{ key: string, label: string }>) {// 创建数据库
-            state.list.push(action.payload)
+        createDatabase(state, action: PayloadAction<{}>) {// 创建数据库
+            let list = JSON.parse(JSON.stringify(state.list));
+            list.push(action.payload)
+            return {
+                ...state,
+                list,
+                currentDB: action.payload
+            }
         },
         deleteDatabase(state, action: PayloadAction<{ index: number }>) {// 删除数据库
             state.list.splice(action.payload.index, 1)
@@ -62,7 +68,7 @@ const databaseSlice = createSlice({
         },
         addTable(state, action: PayloadAction<{ tableName: string, metadata: any }>) { // 新增表数据
             let list = JSON.parse(JSON.stringify(state.list));
-            let currentDB = list.find((v:any) => v.name === state.currentDB.name);
+            let currentDB = list.find((v: any) => v.name === state.currentDB.name);
             currentDB.tables[action.payload.tableName] = action.payload.metadata;
             return {
                 list,

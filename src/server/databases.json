@@ -29,36 +29,7 @@
       "alias": "数据库2",
       "created_at": "2025-02-11T04:26:56.654Z",
       "updated_at": "2025-02-11T04:26:56.654Z",
-      "tables": {
-        "user": {
-          "alias": "用户",
-          "description": "表的简介"
-        },
-        "asd": {
-          "alias": "sss",
-          "description": "表的简介"
-        },
-        "ddd": {
-          "alias": "sss",
-          "description": "表的简介"
-        },
-        "ddddd": {
-          "alias": "ss",
-          "description": "表的简介"
-        },
-        "sdsd": {
-          "alias": "dd",
-          "description": "表的简介"
-        },
-        "dsdad": {
-          "alias": "dd",
-          "description": "表的简介"
-        },
-        "dsdadd": {
-          "alias": "ddss",
-          "description": "表的简介"
-        }
-      }
+      "tables": {}
     }
   ]
 }

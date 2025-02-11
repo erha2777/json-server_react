@@ -12,7 +12,7 @@ type FieldType = {
 export default function CreateDB() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    
+
     const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
         console.log('Success:', values);
         if (values.name) {
@@ -24,6 +24,7 @@ export default function CreateDB() {
                 if (data.status === 200) {
                     dispatch(
                         addDatabase({
+                            ...data.data,
                             key: `/database?name=${values.name}`,
                             label: values.alias || values.name,
                         })
