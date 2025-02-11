@@ -207,7 +207,7 @@ server.post('/createDatabase', (req, res) => {
     res.json({
       status: 200,
       message: 'Database created successfully',
-      data: { data: newDbEntry }
+      data: newDbEntry
     });
   } catch (error) {
     console.error('Error creating database:', error);
