@@ -48,18 +48,6 @@ const MockDataGeneratorModal: React.FC<ModalProps> = ({ open, onCancel, onOk }) 
         const template: { [key: string]: any } = {};
         fields.forEach((field) => {
             switch (field.type) {
-                // case 'string':
-                //     template[field.name] = Mock.Random.string(5, 10);
-                //     break;
-                // case 'number':
-                //     template[field.name] = Mock.Random.integer(1, 100);
-                //     break;
-                // case 'boolean':
-                //     template[field.name] = Mock.Random.boolean();
-                //     break;
-                // case 'date':
-                //     template[field.name] = Mock.Random.date('yyyy-MM-dd');
-                //     break;
                 default:
                     template[field.name] = Mock.Random.string(5, 10);
             }
@@ -120,7 +108,7 @@ const MockDataGeneratorModal: React.FC<ModalProps> = ({ open, onCancel, onOk }) 
                                 </Button>
                             </div>
                             <div>
-                                <div>{JSON.stringify(field.type)}</div>
+                                {/* <div>{JSON.stringify(field.type)}</div> */}
                                 <MockDataGenerator name={field.name} mock={field.type}></MockDataGenerator>
                             </div>
                         </div>
