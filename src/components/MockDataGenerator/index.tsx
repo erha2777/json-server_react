@@ -1,7 +1,7 @@
 import React from 'react';
 // import Mock from 'mockjs';
 import MockString from './MockString';
-import MockNumber from './MockNumber';
+import MockNumber from './MockNumberAI';
 import MockBoolean from './MockBoolean';
 import MockObject from './MockObject';
 interface MockDataGeneratorProps {
