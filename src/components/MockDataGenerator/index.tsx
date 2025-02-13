@@ -3,7 +3,7 @@ import React from 'react';
 import MockString from './MockString';
 import MockNumber from './MockNumber';
 import MockBoolean from './MockBoolean';
-
+import MockObject from './MockObject';
 interface MockDataGeneratorProps {
     mock: any[];
     name: string;
@@ -22,6 +22,8 @@ const MockDataGenerator: React.FC<MockDataGeneratorProps> = ({ mock, name }) => 
         content = <MockNumber mock={mock[1]} name={name} onChange={onChange}></MockNumber>;
     } else if (mock[0] === 'Boolean') {
         content = <MockBoolean mock={mock[1]} name={name} onChange={onChange}></MockBoolean>;
+    } else if (mock[0] === 'Object') {
+        content = <MockObject mock={mock[1]} name={name} onChange={onChange}></MockObject>;
     }
 
     return <>{content}</>;
