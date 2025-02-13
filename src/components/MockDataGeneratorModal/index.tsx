@@ -4,7 +4,7 @@ import type { CascaderProps } from 'antd';
 import options from './enum';
 import type { Option } from './enum';
 import Mock from 'mockjs';
-import MockDataGenerator from '@/components/MockDataGenerator'
+import MockDataGenerator from '@/components/MockDataGenerator';
 
 // 定义字段类型
 interface Field {
@@ -80,46 +80,49 @@ const MockDataGeneratorModal: React.FC<ModalProps> = ({ open, onCancel, onOk }) 
             cancelText="取消"
             okText="确认"
             footer={false}
-            width="50%"
+            width="80%"
         >
             <Form layout="vertical">
                 {fields.map((field, index) => (
                     <Form.Item key={index} label={`字段 ${index + 1}`}>
-                        <div style={{ display: 'flex', gap: '10px' }}>
-                            <Input
-                                placeholder="字段名称"
-                                value={field.name}
-                                onChange={(e) => {
-                                    const newFields = [...fields];
-                                    newFields[index].name = e.target.value;
-                                    setFields(newFields);
-                                }}
-                            />
-                            <Input
-                                placeholder="字段别名"
-                                value={field.alias}
-                                onChange={(e) => {
-                                    const newFields = [...fields];
-                                    newFields[index].alias = e.target.value;
-                                    setFields(newFields);
-                                }}
-                            />
-                            <Cascader
-                                options={options}
-                                onChange={(value) => {
-                                    const newFields = [...fields];
-                                    newFields[index].type = value;
-                                    setFields(newFields);
-                                }}
-                                placeholder="Please select"
-                            />
+                        <div>
+                            <div style={{ display: 'flex', gap: '10px' }}>
+                                <Input
+                                    placeholder="字段名称"
+                                    value={field.name}
+                                    onChange={(e) => {
+                                        const newFields = [...fields];
+                                        newFields[index].name = e.target.value;
+                                        setFields(newFields);
+                                    }}
+                                />
+                                <Input
+                                    placeholder="字段别名"
+                                    value={field.alias}
+                                    onChange={(e) => {
+                                        const newFields = [...fields];
+                                        newFields[index].alias = e.target.value;
+                                        setFields(newFields);
+                                    }}
+                                />
+                                <Cascader
+                                    options={options}
+                                    onChange={(value) => {
+                                        const newFields = [...fields];
+                                        newFields[index].type = value;
+                                        setFields(newFields);
+                                    }}
+                                    placeholder="Please select"
+                                />
 
-                            <div>{JSON.stringify(field.type)}</div>
-                            <MockDataGenerator mock={field.type}></MockDataGenerator>
-
-                            <Button danger onClick={() => removeField(index)}>
-                                删除
-                            </Button>
+                                <Button danger onClick={() => removeField(index)}>
+                                    删除
+                                </Button>
+                            </div>
+                            <div>
+                                <div>{JSON.stringify(field.type)}</div>
+                                <MockDataGenerator name={field.name} mock={field.type}></MockDataGenerator>
+                            </div>
                         </div>
                     </Form.Item>
                 ))}
