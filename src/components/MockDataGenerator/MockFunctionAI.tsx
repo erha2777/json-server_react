@@ -1,45 +1,93 @@
-import React, { useState, useEffect } from 'react';
-import { Input, Alert, Tag } from 'antd';
+import React, { useState, useCallback, useEffect } from 'react';
+import { Input, Alert, Row, Col, Tag } from 'antd';
+
+type FunctionMode = 'function';
 
 const MockFunction: React.FC<{
     name: string;
-    mock: 'Function' | 'function'; // 匹配数据结构的value
-    onChange?: (value: Record<string, any>) => void;
+    mock: FunctionMode;
+    onChange?: (mock: Record<string, any>) => void;
 }> = ({ name, mock, onChange }) => {
-    // 状态管理
-    const [functionPath, setFunctionPath] = useState('');
+    const [state, setState] = useState({
+        functionExpression: '',
+        error: '',
+    });
 
-    // 生成Mock规则
-    const generateRule = () => {
-        if (mock === 'function') {
-            return { [`${name}|@pick`]: functionPath };
+    const generatePreview = useCallback(() => {
+        const { functionExpression } = state;
+        if (!functionExpression) return '等待输入...';
+        return `function() { ${functionExpression} }`;
+    }, [state]);
+
+    const generateRule = useCallback(() => {
+        const { functionExpression } = state;
+        if (!functionExpression.trim()) return;
+
+        try {
+            // 将函数表达式转换为字符串形式
+            const funcStr = `function() { ${functionExpression} }`;
+            return { [name]: funcStr };
+        } catch (error) {
+            console.error('函数表达式无效:', error);
+            setState((prev) => ({ ...prev, error: '函数表达式无效，请检查语法或引用是否正确。' }));
+            return {};
         }
-        return {}; // Function父级不需要生成规则
+    }, [name, state]);
+
+    const handleChange = {
+        functionExpression: (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+            setState((prev) => ({ ...prev, functionExpression: e.target.value, error: '' }));
+        },
     };
 
-    // 同步规则变化
     useEffect(() => {
-        onChange?.(generateRule());
-    }, [name, mock, functionPath]);
+        const rule = generateRule();
+        onChange?.(rule || {});
+    }, [generateRule, onChange]);
 
     return (
-        <div className="mock-function">
-            {mock === 'Function' ? (
-                <Alert message="方法类型说明" description="请选择子项配置具体方法规则" type="info" showIcon />
-            ) : (
-                <>
-                    <Alert message="属性引用规则" description="通过 @pick 函数引用其他属性值" type="info" showIcon />
-                    <Input
-                        value={functionPath}
-                        onChange={(e) => setFunctionPath(e.target.value)}
-                        placeholder="输入属性路径（例如：user.list.0.name）"
-                        style={{ marginTop: 16 }}
+        <div className="mock-function-container" style={{ margin: '16px 0' }}>
+            <Alert
+                message="操作指南"
+                description="输入一个函数表达式，可以引用实例上的其他属性，例如：return this.age;"
+                type="info"
+                showIcon
+            />
+
+            {state.error && <Alert message="错误" description={state.error} type="error" showIcon />}
+
+            <Row gutter={16} style={{ marginTop: 16 }}>
+                <Col span={24}>
+                    <Input.TextArea
+                        value={state.functionExpression}
+                        onChange={handleChange.functionExpression}
+                        placeholder="输入函数表达式，例如：return this.age;"
+                        allowClear
+                        autoSize={{ minRows: 3, maxRows: 5 }}
                     />
-                    <div style={{ marginTop: 8 }}>
-                        生成规则：{name}|@pick <Tag color="blue">{functionPath || '未配置'}</Tag>
-                    </div>
-                </>
-            )}
+                </Col>
+            </Row>
+
+            <div style={{ marginTop: 16 }}>
+                <Tag color="blue">规则预览</Tag>
+                <code>
+                    {name}: {generatePreview()}
+                </code>
+            </div>
+
+            <div style={{ marginTop: 8 }}>
+                <Tag color="geekblue">示例输出</Tag>
+                <div
+                    style={{
+                        padding: 8,
+                        background: '#fafafa',
+                        borderRadius: 4,
+                        minHeight: 32,
+                    }}
+                >
+                    {generatePreview() || '输入函数表达式后预览'}
+                </div>
+            </div>
         </div>
     );
 };
