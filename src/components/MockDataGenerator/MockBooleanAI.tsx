@@ -1,95 +1,131 @@
 import React, { useState, useEffect } from 'react';
-import { InputNumber, Alert } from 'antd';
+import { InputNumber, Radio, Alert, Tag } from 'antd';
 
-const MockBoolean: React.FC<{ 
-  name: string;
-  mock: string;
-  onChange?: (mock: any) => void 
-}> = ({ name, mock, onChange }) => {
-  // 比例模式状态
-  const [ratio, setRatio] = useState({ trueRatio: 1, falseRatio: 1 });
-  
-  // 计算概率（保留两位小数）
-  const calcProbability = (): number => {
-    const total = ratio.trueRatio + ratio.falseRatio;
-    return total === 0 ? 0.5 : ratio.trueRatio / total;
-  };
+interface MockBooleanProps {
+    name: string;
+    mock: string;
+    onChange?: (mock: any) => void;
+}
 
-  useEffect(() => {
-    const generateRule = () => {
-      if (mock === '1') {
-        return { [`${name}|1`]: true }; // Mock.js标准语法
-      }
-      
-      if (mock === 'min-max') {
-        return { 
-          [name]: true,
-          _probability: calcProbability() // 实际生成规则需要根据Mock.js语法调整
-        };
-      }
-      
-      return {};
+const MockBoolean: React.FC<MockBooleanProps> = ({ name, mock, onChange }) => {
+    const [booleanVal, setBoolean] = useState(true);
+    const [interval, setInterval] = useState([1, 1]);
+
+    // 生成规则预览
+    const generatePreview = () => {
+        if (mock === '1') {
+            return `${name}|1 : ${booleanVal}`;
+        } else if (mock === 'min-max') {
+            return `${name}|${interval[0]}-${interval[1]} : ${booleanVal}`;
+        }
+        return '';
     };
 
-    onChange?.(generateRule());
-  }, [name, mock, ratio]);
+    // 生成Mock规则
+    const generateRule = () => {
+        if (mock === '1') {
+            return { [`${name}|1`]: booleanVal };
+        } else if (mock === 'min-max') {
+            // const probability = interval[0] / (interval[0] + interval[1]);
+            return {
+                [`${name}|${interval[0]}-${interval[1]}`]: booleanVal,
+                // _probability: probability
+            };
+        }
+        return {};
+    };
 
-  return (
-    <div style={{ margin: '16px 0' }}>
-      {mock === '1' && (
-        <Alert
-          message="1:1 模式"
-          description={`${name}|1 表示true/false各50%概率`}
-          type="info"
-        />
-      )}
+    // 更新规则
+    const updateRule = () => {
+        const rule = generateRule();
+        onChange?.(rule);
+    };
 
-      {mock === 'min-max' && (
-        <div>
-          <Alert
-            message="比例模式"
-            description="输入比例值，系统会自动计算概率（例如2:3表示40% true）"
-            type="info"
-            style={{ marginBottom: 16 }}
-          />
-          <div style={{ display: 'flex', gap: 16 }}>
-            <div>
-              <span>True 比例：</span>
-              <InputNumber
-                min={0}
-                max={100}
-                value={ratio.trueRatio}
-                onChange={v => setRatio(prev => ({ ...prev, trueRatio: Number(v) || 0 }))}
-              />
+    // 监听状态变化，更新规则
+    useEffect(() => {
+        updateRule();
+    }, [booleanVal, interval, mock, name]);
+
+    // 处理输入变化
+    const handleIntervalChange = (value: number | null, index: 0 | 1) => {
+        const newInterval = [...interval];
+        if (typeof value === 'number') {
+            newInterval[index] = Math.max(1, value);
+            if (index === 1 && newInterval[0] > newInterval[1]) {
+                newInterval[1] = newInterval[0];
+            }
+            setInterval(newInterval);
+        }
+    };
+
+    return (
+        <div style={{ margin: '16px 0' }}>
+            {mock === '1' && (
+                <Alert message="1:1 模式" description={`${name}|1 表示true/false各50%概率`} type="info" showIcon />
+            )}
+
+            {mock === 'min-max' && (
+                <div>
+                    <Alert
+                        message="比例模式"
+                        description="输入比例值，系统会自动计算概率（例如2:3表示40% true）"
+                        type="info"
+                        showIcon
+                        style={{ marginBottom: 16 }}
+                    />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                        <Radio.Group
+                            value={booleanVal}
+                            onChange={(e) => setBoolean(e.target.value)}
+                            options={[
+                                { value: true, label: 'true' },
+                                { value: false, label: 'false' },
+                            ]}
+                        />
+                        <InputNumber
+                            min={1}
+                            value={interval[0]}
+                            onChange={(v) => handleIntervalChange(v, 0)}
+                            style={{ width: '80px' }}
+                        />
+                        <span>-</span>
+                        <InputNumber
+                            min={1}
+                            value={interval[1]}
+                            onChange={(v) => handleIntervalChange(v, 1)}
+                            style={{ width: '80px' }}
+                        />
+                    </div>
+                </div>
+            )}
+
+            {/* 预览区域 */}
+            <div style={{ marginTop: 16 }}>
+                <Tag color="blue">规则预览</Tag>
+                <code>{generatePreview()}</code>
             </div>
-            <div>
-              <span>False 比例：</span>
-              <InputNumber
-                min={0}
-                max={100}
-                value={ratio.falseRatio}
-                onChange={v => setRatio(prev => ({ ...prev, falseRatio: Number(v) || 0 }))}
-              />
+
+            <div style={{ marginTop: 8 }}>
+                <Tag color="geekblue">示例输出</Tag>
+                <div
+                    style={{
+                        padding: 8,
+                        background: '#fafafa',
+                        borderRadius: 4,
+                        minHeight: 32,
+                    }}
+                >
+                    {mock === '1'
+                        ? Math.random() > 0.5
+                            ? 'true'
+                            : 'false'
+                        : Math.random() < interval[0] / (interval[0] + interval[1])
+                        ? 'true'
+                        : 'false'}
+                </div>
             </div>
-          </div>
-          <div style={{ marginTop: 16 }}>
-            <span>实际概率：</span>
-            <span style={{ color: '#1890ff' }}>
-              {calcProbability() * 100}% true / {100 - calcProbability() * 100}% false
-            </span>
-          </div>
         </div>
-      )}
-
-      <div style={{ marginTop: 16, color: '#666' }}>
-        <pre>
-          {mock === '1' ? 
-            `${name}|1 => 随机布尔值` : 
-            `${name} @probability(${calcProbability()})`}
-        </pre>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default MockBoolean;
