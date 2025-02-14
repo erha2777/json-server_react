@@ -59,7 +59,7 @@ const MockNumber: React.FC<MockNumberProps> = ({ name, mock, onChange }) => {
       {/* 递增模式 */}
       {mock === '+1' && (
         <div>
-          <p>'name|+1': number<br />数字自动递增，初始值：</p>
+          <p>'name|+1': number<br />属性值自动加 1，初始值为 number。</p>
           <InputNumber
             min={1}
             value={incrementStart}
@@ -74,7 +74,7 @@ const MockNumber: React.FC<MockNumberProps> = ({ name, mock, onChange }) => {
       {/* 整数范围模式 */}
       {mock === 'min-max' && (
         <div>
-          <p>'name|min-max': number<br />整数范围：</p>
+          <p>'name|min-max': number<br />生成一个大于等于 min、小于等于 max 的整数，属性值 number 只是用来确定类型。</p>
           <div style={{ display: 'flex', gap: 8 }}>
             <InputNumber
               min={1}
@@ -97,7 +97,7 @@ const MockNumber: React.FC<MockNumberProps> = ({ name, mock, onChange }) => {
       {/* 小数范围模式 */}
       {mock === 'min-max.dmin-dmax' && (
         <div>
-          <p>'name|min-max.dmin-dmax': number<br />整数和小数范围：</p>
+          <p>'name|min-max.dmin-dmax': number<br />生成一个浮点数，整数部分大于等于 min、小于等于 max，小数部分保留 dmin 到 dmax 位。</p>
           
           <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
             <span>整数部分：</span>

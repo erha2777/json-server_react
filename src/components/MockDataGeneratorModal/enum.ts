@@ -103,14 +103,42 @@ const options: Option[] = [
     {
         value: 'Date',
         label: '时间',
+        children: [
+            {
+                value: 'date',
+                label: "生成日期",
+            },
+            {
+                value: 'time',
+                label: "生成时间",
+            },
+            {
+                value: 'datetime',
+                label: "生成日期时间",
+            },
+            {
+                value: 'now',
+                label: '生成最新时间',
+            },
+        ],
     },
     {
         value: 'RegExp',
         label: '正则',
     },
     // {
-    //   value: 'Path',
-    //   label: '路径',
+    //     value: 'Path',
+    //     label: '路径',
+    //     children: [
+    //         {
+    //             value: 'absolute',
+    //             label: "绝对路径",
+    //         },
+    //         {
+    //             value: 'relative',
+    //             label: "相对路径",
+    //         },
+    //     ],
     // },
     {
         value: 'Image',
