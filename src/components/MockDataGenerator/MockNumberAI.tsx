@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { InputNumber, Alert } from 'antd';
+import { InputNumber, Alert, Tag } from 'antd';
 
 interface MockNumberProps {
     name: string;
@@ -170,9 +170,20 @@ const MockNumber: React.FC<MockNumberProps> = ({ name, mock, onChange }) => {
     return (
         <div>
             {renderInput()}
-            <div style={{ marginTop: 16, border: '1px solid #ddd', padding: '8px', borderRadius: '4px' }}>
-                <p style={{ margin: 0, color: '#666' }}>预览:</p>
-                <div style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{preview}</div>
+            <div style={{ marginTop: 16 }}>
+                <Tag color="blue">规则预览</Tag>
+                <code>{preview}</code>
+            </div>
+            <div style={{ marginTop: 8 }}>
+                <Tag color="geekblue">示例输出</Tag>
+                <div style={{ 
+                    padding: 8,
+                    background: '#fafafa',
+                    borderRadius: 4,
+                    minHeight: 32
+                }}>
+                    {preview || '输入内容后预览'}
+                </div>
             </div>
         </div>
     );
