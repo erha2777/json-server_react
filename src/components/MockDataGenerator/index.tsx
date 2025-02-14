@@ -17,6 +17,8 @@ import MockImageAI from './MockImageAI';
 import MockColorAI from './MockColorAI';
 import MockTextAI from './MockTextAI';
 import MockNameAI from './MockNameAI';
+import MockWebAI from './MockWebAI';
+
 interface MockDataGeneratorProps {
     mock: any[];
     name: string;
@@ -55,6 +57,8 @@ const MockDataGenerator: React.FC<MockDataGeneratorProps> = ({ mock, name }) => 
         content = <MockTextAI mock={mock[1]} name={name} onChange={onChange}></MockTextAI>;
     } else if (mock[0] === 'Name') {
         content = <MockNameAI mock={mock[1]} name={name} onChange={onChange}></MockNameAI>;
+    } else if (mock[0] === 'Web') {
+        content = <MockWebAI mock={mock[1]} name={name} onChange={onChange}></MockWebAI>;
     }
 
     return <>{content}</>;
