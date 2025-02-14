@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Input, InputNumber, Alert } from 'antd';
+import React, { useState, useCallback, useEffect } from 'react';
+import { Input, InputNumber, Alert, Tag } from 'antd';
 import type { InputNumberProps } from 'antd';
 
 const MockArray: React.FC<{
@@ -21,22 +21,22 @@ const MockArray: React.FC<{
   };
 
   const setIntervalMin: InputNumberProps['onChange'] = (value) => {
-          if (typeof value === 'number') {
-              setInterval([value, interval[1]]);
-          }
-      };
-      const setIntervalMax: InputNumberProps['onChange'] = (value) => {
-          if (typeof value === 'number') {
-              setInterval([interval[0], value]);
-          }
-      };
+    if (typeof value === 'number') {
+      setInterval([value, interval[1]]);
+    }
+  };
 
-  
+  const setIntervalMax: InputNumberProps['onChange'] = (value) => {
+    if (typeof value === 'number') {
+      setInterval([interval[0], value]);
+    }
+  };
+
   const setCountFn: InputNumberProps['onChange'] = (value) => {
-          if (typeof value === 'number') {
-              setCount(value);
-          }
-      };
+    if (typeof value === 'number') {
+      setCount(value);
+    }
+  };
 
   const updateRangeParam = (key: 'start' | 'stop' | 'step', value: number | null) => {
     setRangeParams((prev) => ({
@@ -45,52 +45,54 @@ const MockArray: React.FC<{
     }));
   };
 
+  const generatePreview = useCallback(() => {
+    switch (mock) {
+      case '1':
+      case '+1':
+        const items = arrayStr.split(',').map(s => s.trim()).filter(Boolean);
+        return `${name}|${mock}: ${JSON.stringify(items)}`;
+      case 'min-max':
+        const min = interval[0];
+        const max = interval[1];
+        return `${name}|${min}-${max}: ${JSON.stringify(arrayStr.split(',').map(s => s.trim()).filter(Boolean))}`;
+      case 'count':
+        return `${name}|${count}: ${JSON.stringify(arrayStr.split(',').map(s => s.trim()).filter(Boolean))}`;
+      case 'range':
+        const rangeItems = [];
+        if (rangeParams.start !== undefined) rangeItems.push(rangeParams.start);
+        rangeItems.push(rangeParams.stop);
+        if (rangeParams.step !== undefined) rangeItems.push(rangeParams.step);
+        return `@range(${rangeItems.join(',')})`;
+      default:
+        return '等待输入...';
+    }
+  }, [mock, arrayStr, interval, count, rangeParams]);
+
+  const generateRule = useCallback(() => {
+    switch (mock) {
+      case '1':
+      case '+1':
+        const items = arrayStr.split(',').map(s => s.trim()).filter(Boolean);
+        return { [`${name}|${mock}`]: items };
+      case 'min-max':
+        return { [`${name}|${interval.join('-')}`]: arrayStr.split(',').map(s => s.trim()).filter(Boolean) };
+      case 'count':
+        return { [`${name}|${count}`]: arrayStr.split(',').map(s => s.trim()).filter(Boolean) };
+      case 'range':
+        const params = [];
+        if (rangeParams.start !== undefined) params.push(rangeParams.start);
+        params.push(rangeParams.stop);
+        if (rangeParams.step !== undefined) params.push(rangeParams.step);
+        return { [name]: `@range(${params.join(',')})` };
+      default:
+        return {};
+    }
+  }, [mock, arrayStr, interval, count, rangeParams]);
+
   useEffect(() => {
-    const getRule = () => {
-      switch (mock) {
-        case '1':
-        case '+1':
-          return {
-            [`${name}|${mock}`]: arrayStr
-              .split(',')
-              .map((s) => s.trim())
-              .filter(Boolean),
-          };
-
-        case 'min-max':
-          return {
-            [`${name}|${interval.join('-')}`]: arrayStr
-              .split(',')
-              .map((s) => s.trim())
-              .filter(Boolean),
-          };
-
-        case 'count':
-          return {
-            [`${name}|${count}`]: arrayStr
-              .split(',')
-              .map((s) => s.trim())
-              .filter(Boolean),
-          };
-
-        case 'range':
-          const params = [];
-          if (rangeParams.start !== undefined) params.push(rangeParams.start);
-          params.push(rangeParams.stop);
-          if (rangeParams.step !== undefined) params.push(rangeParams.step);
-
-          return {
-            [name]: `@range(${params.join(',')})`,
-            _params: rangeParams, // 保留原始参数供预览使用
-          };
-
-        default:
-          return {};
-      }
-    };
-
-    onChange?.(getRule());
-  }, [name, mock, arrayStr, interval, count, rangeParams]);
+    const rule = generateRule();
+    onChange?.(rule);
+  }, [generateRule, onChange]);
 
   return (
     <div style={{ margin: '16px 0' }}>
@@ -98,7 +100,7 @@ const MockArray: React.FC<{
         <>
           <Alert
             message="随机选取模式"
-            description="从输入的数组中随机选取一个元素作为结果"
+            description="从输入的数组中随机选取一个元素作为结果（例：苹果,香蕉,橙子）"
             type="info"
             style={{ marginBottom: 16 }}
           />
@@ -114,7 +116,7 @@ const MockArray: React.FC<{
         <>
           <Alert
             message="顺序选取模式"
-            description="从输入的数组中按顺序选取一个元素作为结果"
+            description="从输入的数组中按顺序选取一个元素作为结果（例：周一,周二,周三）"
             type="info"
             style={{ marginBottom: 16 }}
           />
@@ -130,7 +132,7 @@ const MockArray: React.FC<{
         <>
           <Alert
             message="重复范围模式"
-            description="输入基础数组项，系统将根据min和max值生成重复次数范围"
+            description="输入基础数组项，系统将根据min和max值生成重复次数范围（例：周一,周二,周三）"
             type="info"
             style={{ marginBottom: 16 }}
           />
@@ -151,7 +153,7 @@ const MockArray: React.FC<{
         <>
           <Alert
             message="固定重复次数模式"
-            description="输入基础数组项和重复次数，系统将生成固定次数的重复数组"
+            description="输入基础数组项和重复次数，系统将生成固定次数的重复数组（例：周一,周二,周三）"
             type="info"
             style={{ marginBottom: 16 }}
           />
@@ -203,6 +205,23 @@ const MockArray: React.FC<{
           </div>
         </div>
       )}
+
+      <div style={{ marginTop: 16 }}>
+        <Tag color="blue">规则预览</Tag>
+        <code>{generatePreview()}</code>
+      </div>
+
+      <div style={{ marginTop: 8 }}>
+        <Tag color="geekblue">示例输出</Tag>
+        <div style={{ 
+          padding: 8,
+          background: '#fafafa',
+          borderRadius: 4,
+          minHeight: 32
+        }}>
+          {generatePreview() || '输入内容后预览'}
+        </div>
+      </div>
     </div>
   );
 };
