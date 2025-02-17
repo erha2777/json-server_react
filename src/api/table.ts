@@ -12,6 +12,6 @@ export function updateTableMetadata(data: { tableName: string, metadata?: any[],
     return request({
         method: 'put',
         url: `/updateTableMetadata`,
-        data: data,
+        data,
     })
 };

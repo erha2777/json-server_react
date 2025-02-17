@@ -290,7 +290,7 @@ server.put('/updateTableMetadata', (req, res) => {
       data: {
         dbName,
         tableName,
-        metadata: mock
+        metadata: metadata
       }
     });
   } catch (error) {

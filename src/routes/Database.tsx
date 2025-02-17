@@ -9,7 +9,7 @@ import TableCard from '@/components/TableCard';
 import CreatTableModal from '@/components/CreatTableModal';
 import MockDataGeneratorModal from '@/components/MockDataGeneratorModal';
 import type { databaseType } from '@/types/database';
-import { tableInsertData } from '@/api/table';
+import { tableInsertData, updateTableMetadata } from '@/api/table';
 
 export interface tableDataType {
     name: string;
@@ -89,12 +89,18 @@ export default function Database() {
     };
     const handleOk2 = async (data: any) => {
         console.debug('handleOk2', data, currentOpenTable, currentDB);
-        const { data: res } = await tableInsertData({
+        const { data: res1 } = await tableInsertData({
             tableName: currentOpenTable,
             data: data.data,
             dbName: currentDB,
         });
-        console.debug('res', res);
+        const { data: res2 } = await updateTableMetadata({
+            tableName: currentOpenTable,
+            metadata: data.mock,
+            dbName: currentDB,
+        });
+
+        console.debug('res', res1, res2);
 
         setIsModalOpen2(false);
     };
