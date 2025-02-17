@@ -24,14 +24,11 @@ import MockMiscellaneousAI from './MockMiscellaneousAI';
 interface MockDataGeneratorProps {
     mock: any[];
     name: string;
+    onChange: (mock: any) => void
     // 其他属性
 }
 
-const MockDataGenerator: React.FC<MockDataGeneratorProps> = ({ mock, name }) => {
-    const onChange = (mock: any) => {
-        console.debug('mock', mock);
-    };
-
+const MockDataGenerator: React.FC<MockDataGeneratorProps> = ({ mock, name, onChange }) => {
     let content;
     if (mock[0] === 'String') {
         content = <MockString mock={mock[1]} name={name} onChange={onChange}></MockString>;

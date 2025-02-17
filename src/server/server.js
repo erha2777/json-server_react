@@ -88,6 +88,70 @@ server.use((req, res, next) => {
   next();
 });
 
+// 批量插入数据接口（示例路径：POST /posts/batch?db=mydb）
+// 批量插入数据接口（支持自增ID）
+server.post('/:table/batch', (req, res) => {
+  const table = req.params.table; // 获取表名
+  const data = req.body; // 请求体中的数组数据
+  const dbName = req.query.db || 'default'; // 数据库名称
+
+  if (!Array.isArray(data)) {
+    return res.status(400).json({
+      status: 400,
+      message: '请求体必须是数组',
+      data: null
+    });
+  }
+
+  try {
+    const db = req.router.db; // 获取数据库实例
+    const tableCollection = db.get(table); // 获取表对象
+
+    // 检查表是否存在
+    if (!tableCollection.value()) {
+      return res.status(404).json({
+        status: 404,
+        message: `表 ${table} 不存在`,
+        data: null
+      });
+    }
+
+    // 获取当前表的最大 ID（用于自增）
+    const currentData = tableCollection.value();
+    let maxId = currentData.length > 0
+      ? Math.max(...currentData.map(item => item.id || 0))
+      : 0;
+
+    // 为每条数据生成自增 ID
+    const dataWithIds = data.map(item => {
+      if (!item.id) {
+        maxId += 1;
+        return { ...item, id: maxId };
+      }
+      return item;
+    });
+
+    // 批量插入数据
+    dataWithIds.forEach(item => {
+      tableCollection.push(item).write();
+    });
+
+    // 返回响应
+    res.json({
+      status: 201,
+      message: '批量插入成功',
+      data: { insertedCount: data.length }
+    });
+  } catch (error) {
+    console.error('批量插入错误:', error);
+    res.status(500).json({
+      status: 500,
+      message: '内部服务器错误',
+      data: null
+    });
+  }
+});
+
 // 动态新增表的接口
 server.post('/addTable', (req, res) => {
   const { tableName, data, metadata } = req.body;
@@ -160,6 +224,80 @@ server.post('/addTable', (req, res) => {
     res.status(500).json({
       status: 500,
       message: 'Internal server error',
+      data: null
+    });
+  }
+});
+
+// 更新表元数据接口 (PUT /updateTableMetadata)
+server.put('/updateTableMetadata', (req, res) => {
+  const { dbName, tableName, metadata } = req.body; // 从请求体中获取参数
+  const dbListPath = path.join(__dirname, 'databases.json');
+
+  // 参数校验
+  if (!dbName || !tableName || !metadata) {
+    return res.status(400).json({
+      status: 400,
+      message: '缺少必要参数: dbName, tableName 或 metadata',
+      data: null
+    });
+  }
+
+  try {
+    // 读取 databases.json
+    const dbListContent = fs.readFileSync(dbListPath, 'utf8');
+    const databases = JSON.parse(dbListContent).databases;
+
+    // 查找目标数据库
+    const targetDbIndex = databases.findIndex(db => db.name === dbName);
+    if (targetDbIndex === -1) {
+      return res.status(404).json({
+        status: 404,
+        message: `数据库 ${dbName} 不存在`,
+        data: null
+      });
+    }
+
+    // 查找目标表
+    const targetDb = databases[targetDbIndex];
+    if (!targetDb.tables || !targetDb.tables[tableName]) {
+      return res.status(404).json({
+        status: 404,
+        message: `表 ${tableName} 不存在`,
+        data: null
+      });
+    }
+
+    // 更新元数据
+    databases[targetDbIndex] = {
+      ...targetDb,
+      updated_at: new Date().toISOString(),
+      tables: {
+        ...targetDb.tables,
+        [tableName]: {
+          ...targetDb.tables[tableName],
+          metadata: metadata // 将 mock 数据写入 metadata
+        }
+      }
+    };
+
+    // 写回文件
+    fs.writeFileSync(dbListPath, JSON.stringify({ databases }, null, 2));
+
+    res.json({
+      status: 200,
+      message: '表元数据更新成功',
+      data: {
+        dbName,
+        tableName,
+        metadata: mock
+      }
+    });
+  } catch (error) {
+    console.error('更新元数据错误:', error);
+    res.status(500).json({
+      status: 500,
+      message: '内部服务器错误',
       data: null
     });
   }

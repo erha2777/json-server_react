@@ -9,8 +9,10 @@ import TableCard from '@/components/TableCard';
 import CreatTableModal from '@/components/CreatTableModal';
 import MockDataGeneratorModal from '@/components/MockDataGeneratorModal';
 import type { databaseType } from '@/types/database';
+import { tableInsertData } from '@/api/table';
 
 export interface tableDataType {
+    name: string;
     data: any[];
     metadata: any;
 }
@@ -53,6 +55,7 @@ export default function Database() {
         Object.keys(data).forEach((key: string) => {
             if (Array.isArray(data[key])) {
                 arr.push({
+                    name: key,
                     metadata: (currentDBData.tables && currentDBData.tables[key]) || {},
                     data: data[key],
                 });
@@ -79,10 +82,20 @@ export default function Database() {
 
     // mock生成器弹窗
     const [isModalOpen2, setIsModalOpen2] = useState(false);
-    const showModal2 = () => {
+    const [currentOpenTable, setCurrentOpenTable] = useState('');
+    const showModal2 = (name: string) => {
+        setCurrentOpenTable(name);
         setIsModalOpen2(true);
     };
-    const handleOk2 = () => {
+    const handleOk2 = async (data: any) => {
+        console.debug('handleOk2', data, currentOpenTable, currentDB);
+        const { data: res } = await tableInsertData({
+            tableName: currentOpenTable,
+            data: data.data,
+            dbName: currentDB,
+        });
+        console.debug('res', res);
+
         setIsModalOpen2(false);
     };
     const handleCancel2 = () => {
@@ -109,7 +122,9 @@ export default function Database() {
     }, [currentDBData]);
 
     // 数据库里面的表列表
-    const tableList = database.tableList && database.tableList.map((table, index) => <TableCard key={index} data={table} addData={showModal2}></TableCard>);
+    const tableList =
+        database.tableList &&
+        database.tableList.map((table, index) => <TableCard key={index} data={table} addData={showModal2}></TableCard>);
     return (
         <>
             <Flex gap="16px" vertical>
@@ -123,8 +138,17 @@ export default function Database() {
                     {tableList}
                 </Flex>
             </Flex>
-            <CreatTableModal open={isModalOpen} onOk={handleOk} onCancel={handleCancel} currentDB={currentDB}></CreatTableModal>
-            <MockDataGeneratorModal open={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2}></MockDataGeneratorModal>
+            <CreatTableModal
+                open={isModalOpen}
+                onOk={handleOk}
+                onCancel={handleCancel}
+                currentDB={currentDB}
+            ></CreatTableModal>
+            <MockDataGeneratorModal
+                open={isModalOpen2}
+                onOk={handleOk2}
+                onCancel={handleCancel2}
+            ></MockDataGeneratorModal>
         </>
     );
 }

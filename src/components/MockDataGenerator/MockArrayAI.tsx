@@ -92,7 +92,7 @@ const MockArray: React.FC<{
   useEffect(() => {
     const rule = generateRule();
     onChange?.(rule);
-  }, [generateRule, onChange]);
+  }, [generateRule]);
 
   return (
     <div style={{ margin: '16px 0' }}>

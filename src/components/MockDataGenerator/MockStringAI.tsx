@@ -77,7 +77,7 @@ const MockString: React.FC<{
   useEffect(() => {
     const rule = generateRule();
     onChange?.(rule || {});
-  }, [generateRule, onChange]);
+  }, [generateRule]);
 
   return (
     <div className="mock-string-container" style={{ margin: '16px 0' }}>

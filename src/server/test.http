@@ -34,3 +34,16 @@ Content-Type: application/json
     "title": "json-server",
     "author": "typicode"
 }
+
+### 批量新增表数据
+POST  http://localhost:3000/add/batch?db=db1
+Content-Type: application/json
+
+[{ 
+    "title": "json-server",
+    "author": "typicode"
+},
+{ 
+    "title": "json-server2",
+    "author": "typicode2"
+}]

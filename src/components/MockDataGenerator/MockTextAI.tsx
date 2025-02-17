@@ -92,7 +92,7 @@ const TextMock: React.FC<{
   useEffect(() => {
     const rule = generateRule();
     onChange?.(rule || {});
-  }, [generateRule, onChange]);
+  }, [generateRule]);
 
   return (
     <div className="text-mock-container" style={{ margin: '16px 0' }}>

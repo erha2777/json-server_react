@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { Modal, Button, Form, Input, Cascader } from 'antd';
-import type { CascaderProps } from 'antd';
+import { Modal, Button, Form, Input, Cascader, Table, Flex, InputNumber } from 'antd';
+import type { InputNumberProps } from 'antd';
 import options from './enum';
-import type { Option } from './enum';
 import Mock from 'mockjs';
 import MockDataGenerator from '@/components/MockDataGenerator';
 
@@ -11,22 +10,25 @@ interface Field {
     name: string;
     alias: string;
     type: string[];
-    mock: string;
+    mock: any;
 }
 
-// 定义生成的 Mock 数据类型
-interface MockData {
-    [key: string]: any;
+interface tableData {
+    dataSource: any[];
+    columns: any[];
 }
 interface ModalProps {
     open: boolean;
     onCancel: () => void;
-    onOk: () => void;
+    onOk: (data: any) => void;
 }
 
 const MockDataGeneratorModal: React.FC<ModalProps> = ({ open, onCancel, onOk }) => {
     const [fields, setFields] = useState<Field[]>([]);
-    const [mockData, setMockData] = useState<MockData[]>([]);
+    const [mockData, setMockData] = useState<tableData>({
+        dataSource: [],
+        columns: [],
+    });
 
     const addField = () => {
         setFields([...fields, { name: '', alias: '', type: [], mock: '' }]);
@@ -39,26 +41,57 @@ const MockDataGeneratorModal: React.FC<ModalProps> = ({ open, onCancel, onOk }) 
         setFields(newFields);
     };
 
-    const onChange: CascaderProps<Option>['onChange'] = (value) => {
-        console.log(value);
+    // table组件配置
+    const getColumns = (list: Field[]) => {
+        return list.map((item) => {
+            return {
+                title: item.alias || item.name,
+                dataIndex: item.name,
+                key: item.name,
+            };
+        });
+    };
+
+    const [number, setNumber] = useState(10);
+
+    const onChange: InputNumberProps['onChange'] = (value) => {
+        if (typeof value === 'number') {
+            setNumber(value);
+        }
     };
 
     // 生成 Mock 数据
     const generateMockData = () => {
         const template: { [key: string]: any } = {};
-        fields.forEach((field) => {
-            switch (field.type) {
-                default:
-                    template[field.name] = Mock.Random.string(5, 10);
-            }
+        fields.forEach((field: any) => {
+            Object.keys(field.mock).forEach((key: string) => {
+                template[key] = field.mock[key];
+            });
         });
         console.debug('template', template);
 
         const data = Mock.mock({
-            'list|10': [template], // 生成 10 条数据
+            [`list|${number}`]: [template], // 生成 10 条数据
         }).list;
+        console.debug('data', data);
 
-        setMockData(data);
+        setMockData({
+            dataSource: data.map((v: any, i: number) => {
+                v.id = i;
+                return v;
+            }),
+            columns: getColumns(fields),
+        });
+    };
+
+    const onOkFn = () => {
+        onOk({
+            mock: fields,
+            data: mockData.dataSource.map((v) => {
+                let { id, ...obj } = v;
+                return obj;
+            }),
+        });
     };
     return (
         <Modal
@@ -108,8 +141,16 @@ const MockDataGeneratorModal: React.FC<ModalProps> = ({ open, onCancel, onOk }) 
                                 </Button>
                             </div>
                             <div>
-                                {/* <div>{JSON.stringify(field.type)}</div> */}
-                                <MockDataGenerator name={field.name} mock={field.type}></MockDataGenerator>
+                                <div>{JSON.stringify(field)}</div>
+                                <MockDataGenerator
+                                    name={field.name}
+                                    mock={field.type}
+                                    onChange={(value) => {
+                                        const newFields = [...fields];
+                                        newFields[index].mock = value;
+                                        setFields(newFields);
+                                    }}
+                                ></MockDataGenerator>
                             </div>
                         </div>
                     </Form.Item>
@@ -120,11 +161,20 @@ const MockDataGeneratorModal: React.FC<ModalProps> = ({ open, onCancel, onOk }) 
                     </Button>
                 </Form.Item>
                 <Form.Item>
-                    <Button type="primary" onClick={generateMockData}>
-                        生成 Mock 数据
-                    </Button>
+                    <Flex align={'center'} justify={'space-between'}>
+                        <Flex align={'center'} gap={5}>
+                            <InputNumber min={0} max={100} step={5} defaultValue={number} onChange={onChange} />条
+                            <Button type="primary" onClick={generateMockData}>
+                                生成 Mock 数据
+                            </Button>
+                        </Flex>
+                        <Button type="primary" onClick={onOkFn}>
+                            保存
+                        </Button>
+                    </Flex>
                 </Form.Item>
             </Form>
+            <Table rowKey={(record: any) => record.id} dataSource={mockData.dataSource} columns={mockData.columns} />
         </Modal>
     );
 };
