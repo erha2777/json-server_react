@@ -21,7 +21,7 @@ const MockFunction: React.FC<{
 
     const generateRule = useCallback(() => {
         const { functionExpression } = state;
-        if (!functionExpression.trim()) return;
+        // if (!functionExpression.trim()) return;
 
         try {
             // 将函数表达式转换为字符串形式

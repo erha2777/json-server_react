@@ -35,7 +35,7 @@ const MockString: React.FC<{
   // 生成Mock规则
   const generateRule = useCallback(() => {
     const { baseString, interval, count } = state;
-    if (!baseString.trim()) return;
+    // if (!baseString.trim()) return;
 
     return mock === 'min-max'
       ? { [`${name}|${interval.join('-')}`]: baseString }

@@ -19,7 +19,7 @@ const MockRegExp: React.FC<{
   // 生成Mock规则
   const generateRule = useCallback(() => {
     const { regex } = state;
-    if (!regex.trim()) return;
+    // if (!regex.trim()) return;
     return {
       [name]: {
         regex,
