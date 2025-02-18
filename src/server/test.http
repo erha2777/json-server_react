@@ -48,6 +48,10 @@ Content-Type: application/json
     "author": "typicode2"
 }]
 
+### 删除表
+DELETE  http://localhost:3000/tables/tab
+
+
 
 ### 删除表数据
 DELETE  http://localhost:3000/user/10

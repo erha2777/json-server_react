@@ -79,15 +79,26 @@ export default function Database() {
         };
     };
 
+    // 删除表数据成功之后更新页面数据
     const deleteItem = (params: { tableName: string; id: string | number }) => {
-        // 删除成功之后更新页面数据
         let newData: databaseDataType = JSON.parse(JSON.stringify(database));
         let item: tableDataType | undefined = newData.tableList.find(
             (item: tableDataType) => item.name === params.tableName
         );
         if (item) {
             let index = item.data.findIndex((v) => v.id === params.id);
-            item.data.splice(index, 1);
+            if (index !== -1) {
+                item.data.splice(index, 1);
+                setDatabase(newData);
+            }
+        }
+    };
+    // 删除表成功之后更新页面数据
+    const deleteTable = (tableName: string) => {
+        let newData: databaseDataType = JSON.parse(JSON.stringify(database));
+        let index = newData.tableList.findIndex((item: tableDataType) => item.name === tableName);
+        if (index !== -1) {
+            newData.tableList.splice(index, 1);
             setDatabase(newData);
         }
     };
@@ -171,6 +182,7 @@ export default function Database() {
                 addData={showAddMockModal}
                 currentDB={currentDB}
                 deleteItem={deleteItem}
+                deleteTable={deleteTable}
             ></TableCard>
         ));
     return (

@@ -88,7 +88,81 @@ server.use((req, res, next) => {
   next();
 });
 
-// 定义删除接口
+// 定义删除表的接口
+server.delete('/tables/:tableName', (req, res) => {
+  const tableName = req.params.tableName;
+  const dbName = req.query.db || 'default';
+  const dbPath = path.join(DB_DIR, `${dbName}.json`);
+  const dbListPath = path.join(__dirname, 'databases.json');
+
+  try {
+    // 检查数据库文件是否存在
+    if (!fs.existsSync(dbPath)) {
+      return res.status(404).json({
+        status: 404,
+        message: 'Database not found',
+        data: null
+      });
+    }
+
+    // 读取数据库内容
+    const dbContent = JSON.parse(fs.readFileSync(dbPath, 'utf8'));
+
+    // 检查表是否存在
+    if (!dbContent[tableName]) {
+      return res.status(404).json({
+        status: 404,
+        message: `Table ${tableName} does not exist`,
+        data: null
+      });
+    }
+
+    // 删除表
+    delete dbContent[tableName];
+
+    // 写回数据库文件
+    fs.writeFileSync(dbPath, JSON.stringify(dbContent, null, 2));
+
+    // 更新数据库列表文件
+    if (fs.existsSync(dbListPath)) {
+      const dbListContent = fs.readFileSync(dbListPath, 'utf8');
+      let dbList = JSON.parse(dbListContent).databases;
+
+      // 更新目标数据库的表信息
+      dbList = dbList.map(db => {
+        if (db.name === dbName) {
+          const updatedTables = { ...db.tables };
+          delete updatedTables[tableName];
+          return {
+            ...db,
+            tables: updatedTables,
+            updated_at: new Date().toISOString()
+          };
+        }
+        return db;
+      });
+
+      // 写回数据库列表文件
+      fs.writeFileSync(dbListPath, JSON.stringify({ databases: dbList }, null, 2));
+    }
+
+    // 返回成功响应
+    res.json({
+      status: 200,
+      message: `Table ${tableName} deleted successfully`,
+      data: { tableName }
+    });
+  } catch (error) {
+    console.error('Error deleting table:', error);
+    res.status(500).json({
+      status: 500,
+      message: 'Internal server error',
+      data: null
+    });
+  }
+});
+
+// 定义删除表数据接口
 server.delete('/:table/:id', (req, res) => {
   const table = req.params.table;
   const id = parseInt(req.params.id);

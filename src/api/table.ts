@@ -22,3 +22,10 @@ export function deleteTableItem(data: { tableName: string, id: number | string, 
         url: `/${data.tableName}/${data.id}?db=${data.dbName}`,
     })
 };
+
+export function deleteTable(data: { tableName: string, dbName: string }) {
+    return request({
+        method: 'delete',
+        url: `/tables/${data.tableName}?db=${data.dbName}`,
+    })
+};
