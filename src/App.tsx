@@ -76,6 +76,7 @@ function App() {
                         minHeight: 280,
                         background: colorBgContainer,
                         borderRadius: borderRadiusLG,
+                        overflowY: 'auto',
                     }}
                 >
                     {/* 路由配置 */}

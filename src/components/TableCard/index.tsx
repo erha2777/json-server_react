@@ -97,7 +97,8 @@ export default function TableCard({
     };
 
     return (
-        <Card style={{ minWidth: 'calc((100% - 16px * 3) / 4)' }}>
+        // <Card style={{ minWidth: 'calc((100% - 16px * 3) / 4)' }}>
+        <Card style={{ width: '100%' }}>
             <Flex align={'center'} justify={'space-between'} style={{ height: 56 }}>
                 <div>
                     <span style={{ fontWeight: 700, marginRight: 10 }}>{data.metadata.alias}</span>
