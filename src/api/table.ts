@@ -15,3 +15,10 @@ export function updateTableMetadata(data: { tableName: string, metadata?: any[],
         data,
     })
 };
+
+export function deleteTableItem(data: { tableName: string, id: number | string, dbName: string }) {
+    return request({
+        method: 'delete',
+        url: `/${data.tableName}/${data.id}?db=${data.dbName}`,
+    })
+};

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Input, Cascader, Table, Flex, InputNumber } from 'antd';
 import type { InputNumberProps } from 'antd';
 import options from './enum';
@@ -21,18 +21,28 @@ interface ModalProps {
     open: boolean;
     onCancel: () => void;
     onOk: (data: any) => void;
+    defaultFields?: Field[];
 }
 
-const MockDataGeneratorModal: React.FC<ModalProps> = ({ open, onCancel, onOk }) => {
-    const [fields, setFields] = useState<Field[]>([]);
+const MockDataGeneratorModal: React.FC<ModalProps> = ({ open, onCancel, onOk, defaultFields}) => {
+    const [fields, setFields] = useState<Field[]>(defaultFields || []);
     const [mockData, setMockData] = useState<tableData>({
         dataSource: [],
         columns: [],
     });
 
     const addField = () => {
-        setFields([...fields, { name: '', alias: '', type: [], mock: '' }]);
+        const newField = { name: '', alias: '', type: [], mock: '' };
+        // 检查字段名称是否重复
+        const isDuplicate = fields.some(field => field.name === newField.name);
+        if (!isDuplicate) {
+            setFields([...fields, newField]);
+        } else {
+            // 提示用户字段名称已存在
+            alert('字段名称已存在，请输入不同的名称');
+        }
     };
+    
 
     // 删除字段
     const removeField = (index: number) => {
@@ -95,6 +105,17 @@ const MockDataGeneratorModal: React.FC<ModalProps> = ({ open, onCancel, onOk }) 
             }),
         });
     };
+
+    useEffect(() => {
+        if (defaultFields) {
+            const newFields = defaultFields.map(field => ({
+                ...field,
+                mock: field.mock // 确保mock属性是可变的
+            }));
+            setFields(newFields);
+        }
+    }, [defaultFields]);
+    
     return (
         <Modal
             title="Mock 数据生成器"
@@ -130,6 +151,7 @@ const MockDataGeneratorModal: React.FC<ModalProps> = ({ open, onCancel, onOk }) 
                                 />
                                 <Cascader
                                     options={options}
+                                    defaultValue={field.type}
                                     onChange={(value) => {
                                         const newFields = [...fields];
                                         newFields[index].type = value;
@@ -143,7 +165,6 @@ const MockDataGeneratorModal: React.FC<ModalProps> = ({ open, onCancel, onOk }) 
                                 </Button>
                             </div>
                             <div>
-                                <div>{JSON.stringify(field)}</div>
                                 <MockDataGenerator
                                     name={field.name}
                                     mock={field.type}

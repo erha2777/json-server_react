@@ -67,6 +67,19 @@ export default function Database() {
         };
     };
 
+    const deleteItem = (params: { tableName: string; id: string | number }) => {
+        // 删除成功之后更新页面数据
+        let newData: databaseDataType = JSON.parse(JSON.stringify(database));
+        let item: tableDataType | undefined = newData.tableList.find(
+            (item: tableDataType) => item.name === params.tableName
+        );
+        if (item) {
+            let index = item.data.findIndex((v) => v.id === params.id);
+            item.data.splice(index, 1);
+            setDatabase(newData);
+        }
+    };
+
     // 创建表弹窗相关
     const [isModalOpen, setIsModalOpen] = useState(false);
     const showModal = () => {
@@ -87,12 +100,13 @@ export default function Database() {
         data: [],
         metadata: {},
     });
-    const showModal2 = (data: tableDataType) => {
+    // 显示新增mock数据弹窗
+    const showAddMockModal = (data: tableDataType) => {
         setCurrentOpenTable(data);
         setIsModalOpen2(true);
     };
-    const handleOk2 = async (data: any) => {
-        console.debug('handleOk2', data, currentOpenTable, currentDB);
+    // 新增mock数据
+    const addTableMockData = async (data: any) => {
         try {
             const res1 = await tableInsertData({
                 tableName: currentOpenTable.name,
@@ -104,7 +118,6 @@ export default function Database() {
                 metadata: data.mock,
                 dbName: currentDB,
             });
-
             if (res1.status === 201 && res2.status === 200) {
                 getDatabaseDataFn(currentDB);
                 setIsModalOpen2(false);
@@ -139,7 +152,15 @@ export default function Database() {
     // 数据库里面的表列表
     const tableList =
         database.tableList &&
-        database.tableList.map((table, index) => <TableCard key={index} data={table} addData={showModal2}></TableCard>);
+        database.tableList.map((table, index) => (
+            <TableCard
+                key={index}
+                data={table}
+                addData={showAddMockModal}
+                currentDB={currentDB}
+                deleteItem={deleteItem}
+            ></TableCard>
+        ));
     return (
         <>
             <Flex gap="16px" vertical>
@@ -161,8 +182,9 @@ export default function Database() {
             ></CreatTableModal>
             <MockDataGeneratorModal
                 open={isModalOpen2}
-                onOk={handleOk2}
+                onOk={addTableMockData}
                 onCancel={handleCancel2}
+                defaultFields={currentOpenTable?.metadata?.metadata || []}
             ></MockDataGeneratorModal>
         </>
     );
