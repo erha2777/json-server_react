@@ -20,6 +20,10 @@ interface databaseDataType {
     databaseName: string;
     tableList: tableDataType[];
 }
+interface updateMetadata {
+    tableName: string;
+    metadata: any;
+}
 export default function Database() {
     const dispatch = useDispatch();
     const currentDBData: databaseType = useSelector((state: RootState) => state.database.currentDB);
@@ -37,28 +41,36 @@ export default function Database() {
         databaseName: '',
         tableList: [],
     }); // 数据库数据
-    const getDatabaseDataFn = async (db: string) => {
+    const getDatabaseDataFn = async (db: string, metadata?: updateMetadata) => {
         // 获取数据库数据
         try {
             const data = await getDatabaseData(db);
             if (data.status === 200) {
-                setDatabase(filterData(data.data));
+                setDatabase(filterData(data.data, metadata));
             }
             console.debug('data', data);
         } catch (error) {
             console.error(error);
         }
     };
-    const filterData = (data: any) => {
+    const filterData = (data: any, metadata?: updateMetadata) => {
         // 处理数据库数据
         let arr: tableDataType[] = [];
         Object.keys(data).forEach((key: string) => {
             if (Array.isArray(data[key])) {
-                arr.push({
-                    name: key,
-                    metadata: (currentDBData.tables && currentDBData.tables[key]) || {},
-                    data: data[key],
-                });
+                if (metadata && metadata.tableName === key) {
+                    arr.push({
+                        name: key,
+                        metadata: metadata.metadata,
+                        data: data[key],
+                    });
+                } else {
+                    arr.push({
+                        name: key,
+                        metadata: (currentDBData.tables && currentDBData.tables[key]) || {},
+                        data: data[key],
+                    });
+                }
             }
         });
         return {
@@ -119,7 +131,7 @@ export default function Database() {
                 dbName: currentDB,
             });
             if (res1.status === 201 && res2.status === 200) {
-                getDatabaseDataFn(currentDB);
+                getDatabaseDataFn(currentDB, { tableName: currentOpenTable.name, metadata: res2.data });
                 setIsModalOpen2(false);
             }
         } catch (error) {

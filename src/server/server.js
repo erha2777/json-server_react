@@ -340,8 +340,7 @@ server.put('/updateTableMetadata', (req, res) => {
       status: 200,
       message: '表元数据更新成功',
       data: {
-        dbName,
-        tableName,
+        ...targetDb.tables[tableName],
         metadata: metadata
       }
     });
