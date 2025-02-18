@@ -82,27 +82,36 @@ export default function Database() {
 
     // mock生成器弹窗
     const [isModalOpen2, setIsModalOpen2] = useState(false);
-    const [currentOpenTable, setCurrentOpenTable] = useState('');
-    const showModal2 = (name: string) => {
-        setCurrentOpenTable(name);
+    const [currentOpenTable, setCurrentOpenTable] = useState<tableDataType>({
+        name: '',
+        data: [],
+        metadata: {},
+    });
+    const showModal2 = (data: tableDataType) => {
+        setCurrentOpenTable(data);
         setIsModalOpen2(true);
     };
     const handleOk2 = async (data: any) => {
         console.debug('handleOk2', data, currentOpenTable, currentDB);
-        const { data: res1 } = await tableInsertData({
-            tableName: currentOpenTable,
-            data: data.data,
-            dbName: currentDB,
-        });
-        const { data: res2 } = await updateTableMetadata({
-            tableName: currentOpenTable,
-            metadata: data.mock,
-            dbName: currentDB,
-        });
+        try {
+            const res1 = await tableInsertData({
+                tableName: currentOpenTable.name,
+                data: data.data,
+                dbName: currentDB,
+            });
+            const res2 = await updateTableMetadata({
+                tableName: currentOpenTable.name,
+                metadata: data.mock,
+                dbName: currentDB,
+            });
 
-        console.debug('res', res1, res2);
-
-        setIsModalOpen2(false);
+            if (res1.status === 201 && res2.status === 200) {
+                getDatabaseDataFn(currentDB);
+                setIsModalOpen2(false);
+            }
+        } catch (error) {
+            console.error(error);
+        }
     };
     const handleCancel2 = () => {
         setIsModalOpen2(false);

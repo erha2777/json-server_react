@@ -1,15 +1,16 @@
 import { Table, Card } from 'antd';
 import type { tableDataType } from '@/routes/Database';
 import './index.scss';
-export default function TableCard({ data, addData }: { data: tableDataType; addData: (name: string) => void }) {
+export default function TableCard({ data, addData }: { data: tableDataType; addData: (data: tableDataType) => void }) {
     // 获取数据项
     const getColumns = (list: any[]) => {
         if (list && list.length > 0) {
-            return Object.keys(list[0]).map((key: string) => {
+            return list.map((item: any) => {
                 return {
-                    title: key,
-                    dataIndex: key,
-                    key: key,
+                    title: item.alias || item.name,
+                    dataIndex: item.name,
+                    key: item.name,
+                    render: (text: any) => (text ? text : <span style={{ color: 'red' }}>缺失</span>),
                 };
             });
         } else {
@@ -18,7 +19,7 @@ export default function TableCard({ data, addData }: { data: tableDataType; addD
     };
 
     const addDataFn = () => {
-        addData(data.name);
+        addData(data);
     };
 
     return (
@@ -32,7 +33,7 @@ export default function TableCard({ data, addData }: { data: tableDataType; addD
             style={{ minWidth: 'calc((100% - 16px * 3) / 4)' }}
         >
             {/* table组件唯一值默认为key字段 */}
-            <Table rowKey={(record) => record.id} dataSource={data.data} columns={getColumns(data.data)} />
+            <Table rowKey={(record) => record.id} dataSource={data.data} columns={getColumns(data.metadata.metadata)} />
             {/* <Table
                     dataSource={dataSource.map((v, i) => {
                         v.key = i;

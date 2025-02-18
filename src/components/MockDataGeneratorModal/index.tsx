@@ -70,11 +70,13 @@ const MockDataGeneratorModal: React.FC<ModalProps> = ({ open, onCancel, onOk }) 
         });
         console.debug('template', template);
 
-        const data = Mock.mock({
+        let data = Mock.mock({
             [`list|${number}`]: [template], // 生成 10 条数据
         }).list;
         console.debug('data', data);
-
+        if(!Array.isArray(data)) {
+            data = [data]
+        }
         setMockData({
             dataSource: data.map((v: any, i: number) => {
                 v.id = i;
