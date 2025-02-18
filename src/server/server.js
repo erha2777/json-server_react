@@ -88,6 +88,58 @@ server.use((req, res, next) => {
   next();
 });
 
+// 定义删除接口
+server.delete('/:table/:id', (req, res) => {
+  const table = req.params.table;
+  const id = parseInt(req.params.id);
+  const dbName = req.query.db || 'default';
+
+  try {
+    const db = req.router.db;
+    const collection = db.get(table);
+
+    // 检查表是否存在
+    if (!collection.value()) {
+      return res.status(404).json({
+        status: 404,
+        message: `表 ${table} 不存在`,
+        data: null
+      });
+    }
+
+    // 检查数据是否存在
+    const data = collection.find({ id }).value();
+    if (!data) {
+      return res.status(404).json({
+        status: 404,
+        message: `数据不存在`,
+        data: null
+      });
+    }
+
+    // 删除数据
+    collection.remove({ id }).write();
+
+    // 设置 res.locals.data
+    res.locals.data = data;
+
+    // 返回 200 状态码，并包含被删除的数据
+    res.status(200).json({
+      status: 200,
+      message: '数据删除成功',
+      data
+    });
+  } catch (error) {
+    console.error('删除数据错误:', error);
+    res.status(500).json({
+      status: 500,
+      message: '内部服务器错误',
+      data: null
+    });
+  }
+});
+
+
 // 批量插入数据接口（示例路径：POST /posts/batch?db=mydb）
 // 批量插入数据接口（支持自增ID）
 server.post('/:table/batch', (req, res) => {
@@ -454,7 +506,6 @@ server.put('/updateDatabase', (req, res) => {
 
 // 中间件：统一封装响应格式
 server.use((req, res, next) => {
-  // 保存原始的 res.send 方法
   const originalSend = res.send;
 
   res.send = (body) => {

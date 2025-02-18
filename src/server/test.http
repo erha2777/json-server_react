@@ -27,7 +27,7 @@ Content-Type: application/json
 }
 
 ### 新增表数据
-POST  http://localhost:3000/posts?db=db1
+POST  http://localhost:3000/user
 Content-Type: application/json
 
 { 
@@ -47,3 +47,7 @@ Content-Type: application/json
     "title": "json-server2",
     "author": "typicode2"
 }]
+
+
+### 删除表数据
+DELETE  http://localhost:3000/user/10
