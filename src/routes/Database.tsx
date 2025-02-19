@@ -9,6 +9,7 @@ import TableCard from '@/components/TableCard';
 import CreatTableModal from '@/components/CreatTableModal';
 import MockDataGeneratorModal from '@/components/MockDataGeneratorModal';
 import UpdateModal from '@/components/UpdateModal';
+import RestfulApiModal from '@/components/RestfulApi';
 import type { databaseType } from '@/types/database';
 import { tableInsertData, updateTableMetadata } from '@/api/table';
 
@@ -135,23 +136,25 @@ export default function Database() {
     };
     // 新增mock数据
     const addTableMockData = async (data: any) => {
-        try {
-            const res1 = await tableInsertData({
-                tableName: currentOpenTable.name,
-                data: data.data,
-                dbName: currentDB,
-            });
-            const res2 = await updateTableMetadata({
-                tableName: currentOpenTable.name,
-                metadata: data.mock,
-                dbName: currentDB,
-            });
-            if (res1.status === 201 && res2.status === 200) {
-                getDatabaseDataFn(currentDB, { tableName: currentOpenTable.name, metadata: res2.data });
-                setIsModalOpen2(false);
+        if (data?.data?.length > 0) {
+            try {
+                const res1 = await tableInsertData({
+                    tableName: currentOpenTable.name,
+                    data: data.data,
+                    dbName: currentDB,
+                });
+                const res2 = await updateTableMetadata({
+                    tableName: currentOpenTable.name,
+                    metadata: data.mock,
+                    dbName: currentDB,
+                });
+                if (res1.status === 201 && res2.status === 200) {
+                    getDatabaseDataFn(currentDB, { tableName: currentOpenTable.name, metadata: res2.data });
+                    setIsModalOpen2(false);
+                }
+            } catch (error) {
+                console.error(error);
             }
-        } catch (error) {
-            console.error(error);
         }
     };
     const handleCancel2 = () => {
@@ -187,6 +190,23 @@ export default function Database() {
         setIsModalOpen3(false);
     };
 
+    //  restfulApi弹窗相关
+    const [restfulApiIsOpen, setRestfulApiOpen] = useState(false);
+    const [currentApi, setCurrentApi] = useState({
+        tableName: '',
+        dbName: '',
+    });
+    const restfulApiOpen = (tableName: string) => {
+        setCurrentApi({
+            tableName,
+            dbName: currentDB,
+        });
+        setRestfulApiOpen(true);
+    };
+    const restfulApiClose = () => {
+        setRestfulApiOpen(false);
+    };
+
     // 根据当前路径计算需要展开的父菜单
     useEffect(() => {
         // 解析查询参数
@@ -218,6 +238,7 @@ export default function Database() {
                 deleteItem={deleteItem}
                 deleteTable={deleteTable}
                 updateItem={updateItem}
+                showRestfulApi={restfulApiOpen}
             ></TableCard>
         ));
     return (
@@ -252,6 +273,11 @@ export default function Database() {
                 currentDB={currentDB}
                 data={currentData}
             ></UpdateModal>
+            <RestfulApiModal
+                open={restfulApiIsOpen}
+                onClose={restfulApiClose}
+                currentApi={currentApi}
+            ></RestfulApiModal>
         </>
     );
 }

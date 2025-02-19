@@ -4,7 +4,7 @@
       "name": "default",
       "alias": "默认",
       "created_at": "2023-01-01T00:00:00.000Z",
-      "updated_at": "2025-02-18T07:57:57.927Z",
+      "updated_at": "2025-02-19T08:37:39.646Z",
       "tables": {
         "user": {
           "alias": "用户",
@@ -30,6 +30,23 @@
               ],
               "mock": {
                 "str|1-5": "@csentence(1,5)"
+              }
+            }
+          ]
+        },
+        "tab": {
+          "alias": "tab",
+          "description": "表的简介",
+          "metadata": [
+            {
+              "name": "name",
+              "alias": "名称",
+              "type": [
+                "Name",
+                "name"
+              ],
+              "mock": {
+                "name": "@name(false)"
               }
             }
           ]

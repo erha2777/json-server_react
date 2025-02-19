@@ -11,6 +11,7 @@ export default function TableCard({
     deleteItem,
     deleteTable,
     updateItem,
+    showRestfulApi,
 }: {
     data: tableDataType;
     addData: (data: tableDataType) => void;
@@ -18,6 +19,7 @@ export default function TableCard({
     deleteItem: (params: { tableName: string; id: string | number }) => void;
     updateItem: (data: updateItemType) => void;
     deleteTable: (tableName: string) => void;
+    showRestfulApi: (tableName: string) => void;
 }) {
     // 获取数据项
     const getColumns = (list: any[]) => {
@@ -34,6 +36,8 @@ export default function TableCard({
                 title: 'Action',
                 dataIndex: 'tabAction',
                 key: 'tabAction',
+                fixed: 'right',
+                width: 100,
                 render: (_: any, record: any) => (
                     <Space size="middle">
                         <a onClick={() => updateItem({ tableName: data.name, data: record })}>Update</a>
@@ -118,11 +122,14 @@ export default function TableCard({
                         okText="Yes"
                         cancelText="No"
                     >
-                        <a href="#" style={{ color: 'red', marginRight: 10 }}>
+                        <a href="#" style={{ color: 'red' }}>
                             删除表
                         </a>
                     </Popconfirm>
-                    <a href="#" onClick={addDataFn}>
+                    <a href="#" onClick={() => showRestfulApi(data.name)} style={{ marginLeft: 20 }}>
+                        RESTful API
+                    </a>
+                    <a href="#" onClick={addDataFn} style={{ marginLeft: 20 }}>
                         新增数据
                     </a>
                 </span>

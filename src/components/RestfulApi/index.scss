@@ -1,0 +1,39 @@
+.restful-api {
+    &-title {
+        font-weight: 700;
+        font-size: 20px;
+        margin-top: 10px;
+    }
+    &-desc {
+        font-size: 16px;
+        font-weight: 700;
+        margin-top: 10px;
+    }
+    &-item {
+        padding: 10px;
+        border-bottom: 1px solid #ccc;
+        &-title {
+            margin-bottom: 5px;
+        }
+    }
+    .ant-drawer-body {
+        overflow-y: auto;
+    }
+    li {
+        position: relative;
+        display: block;
+        padding-left: 10px;
+        &::before {
+            position: absolute;
+            top: 50%;
+            left: 0px;
+            transform: translateY(-50%);
+            content: '';
+            display: block;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background-color: black;
+        }
+    }
+}
