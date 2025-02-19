@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, Flex } from 'antd';
+import { Button, Flex, message } from 'antd';
 import { useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store/store'; // 导入 RootState 类型
@@ -47,12 +47,13 @@ export default function Database() {
         databaseName: '',
         tableList: [],
     }); // 数据库数据
-    const getDatabaseDataFn = async (db: string, metadata?: updateMetadata) => {
+    const getDatabaseDataFn = async (db: string, metadata?: updateMetadata, callback?: () => void) => {
         // 获取数据库数据
         try {
             const data = await getDatabaseData(db);
             if (data.status === 200) {
                 setDatabase(filterData(data.data, metadata));
+                callback && callback();
             }
             console.debug('data', data);
         } catch (error) {
@@ -149,8 +150,10 @@ export default function Database() {
                     dbName: currentDB,
                 });
                 if (res1.status === 201 && res2.status === 200) {
-                    getDatabaseDataFn(currentDB, { tableName: currentOpenTable.name, metadata: res2.data });
-                    setIsModalOpen2(false);
+                    message.success('添加成功');
+                    getDatabaseDataFn(currentDB, { tableName: currentOpenTable.name, metadata: res2.data }, () => {
+                        setIsModalOpen2(false);
+                    });
                 }
             } catch (error) {
                 console.error(error);
