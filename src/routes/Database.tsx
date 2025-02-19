@@ -8,6 +8,7 @@ import { getDatabaseData } from '@/api/database';
 import TableCard from '@/components/TableCard';
 import CreatTableModal from '@/components/CreatTableModal';
 import MockDataGeneratorModal from '@/components/MockDataGeneratorModal';
+import UpdateModal from '@/components/UpdateModal';
 import type { databaseType } from '@/types/database';
 import { tableInsertData, updateTableMetadata } from '@/api/table';
 
@@ -23,6 +24,10 @@ interface databaseDataType {
 interface updateMetadata {
     tableName: string;
     metadata: any;
+}
+export interface updateItemType {
+    tableName: string;
+    data: any;
 }
 export default function Database() {
     const dispatch = useDispatch();
@@ -153,6 +158,35 @@ export default function Database() {
         setIsModalOpen2(false);
     };
 
+    // 更新表数据弹窗相关
+    const [isModalOpen3, setIsModalOpen3] = useState(false);
+    const [currentData, setCurrentData] = useState({
+        tableName: '',
+        data: {},
+    });
+    const updateItem = (data: updateItemType) => {
+        setCurrentData({
+            tableName: data.tableName,
+            data: data.data,
+        });
+        setIsModalOpen3(true);
+    };
+    const handleOk3 = ({ id, tableName, newData }: { id: string | number; tableName: string; newData: any }) => {
+        let data: databaseDataType = JSON.parse(JSON.stringify(database));
+        let table = data.tableList.find((item: tableDataType) => item.name === tableName);
+        if (table) {
+            let index = table.data.findIndex((item) => item.id === id);
+            if (index !== -1) {
+                table.data[index] = newData;
+                setDatabase(data);
+                setIsModalOpen3(false);
+            }
+        }
+    };
+    const handleCancel3 = () => {
+        setIsModalOpen3(false);
+    };
+
     // 根据当前路径计算需要展开的父菜单
     useEffect(() => {
         // 解析查询参数
@@ -183,6 +217,7 @@ export default function Database() {
                 currentDB={currentDB}
                 deleteItem={deleteItem}
                 deleteTable={deleteTable}
+                updateItem={updateItem}
             ></TableCard>
         ));
     return (
@@ -210,6 +245,13 @@ export default function Database() {
                 onCancel={handleCancel2}
                 defaultFields={currentOpenTable?.metadata?.metadata || []}
             ></MockDataGeneratorModal>
+            <UpdateModal
+                open={isModalOpen3}
+                onOk={handleOk3}
+                onCancel={handleCancel3}
+                currentDB={currentDB}
+                data={currentData}
+            ></UpdateModal>
         </>
     );
 }

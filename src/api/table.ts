@@ -29,3 +29,12 @@ export function deleteTable(data: { tableName: string, dbName: string }) {
         url: `/tables/${data.tableName}?db=${data.dbName}`,
     })
 };
+
+
+export function updateTableItem(data: { tableName: string, dbName: string, id: string | number, data: any }) {
+    return request({
+        method: 'put',
+        url: `/${data.tableName}/${data.id}?db=${data.dbName}`,
+        data: data.data
+    })
+};

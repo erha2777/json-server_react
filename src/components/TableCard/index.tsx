@@ -1,6 +1,6 @@
 import { Table, Card, Flex, Tooltip, Space, Popconfirm, message } from 'antd';
 import type { PopconfirmProps } from 'antd';
-import type { tableDataType } from '@/routes/Database';
+import type { tableDataType, updateItemType } from '@/routes/Database';
 import { InfoCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { deleteTableItem, deleteTable as deleteTableRequest } from '@/api/table';
 import './index.scss';
@@ -10,11 +10,13 @@ export default function TableCard({
     currentDB,
     deleteItem,
     deleteTable,
+    updateItem,
 }: {
     data: tableDataType;
     addData: (data: tableDataType) => void;
     currentDB: string;
     deleteItem: (params: { tableName: string; id: string | number }) => void;
+    updateItem: (data: updateItemType) => void;
     deleteTable: (tableName: string) => void;
 }) {
     // 获取数据项
@@ -34,6 +36,7 @@ export default function TableCard({
                 key: 'tabAction',
                 render: (_: any, record: any) => (
                     <Space size="middle">
+                        <a onClick={() => updateItem({ tableName: data.name, data: record })}>Update</a>
                         <Popconfirm
                             title="删除数据"
                             description="确认删除?"
