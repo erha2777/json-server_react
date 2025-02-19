@@ -62,7 +62,7 @@ const MockDataGeneratorModal: React.FC<ModalProps> = ({ open, onCancel, onOk, de
         });
     };
 
-    const [number, setNumber] = useState(1);
+    const [number, setNumber] = useState(5);
 
     const onChange: InputNumberProps['onChange'] = (value) => {
         if (typeof value === 'number') {
