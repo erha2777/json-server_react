@@ -60,7 +60,7 @@ const MockColor: React.FC<{
         onChange?.({
             mock: rule || {},
         });
-    }, [generateColor, generateRule, onChange]);
+    }, [generateColor, generateRule]);
 
     return (
         <div className="mock-color-container" style={{ margin: '16px 0' }}>
