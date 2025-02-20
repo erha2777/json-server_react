@@ -80,7 +80,7 @@ const MockDataGeneratorModal: React.FC<ModalProps> = ({ open, onCancel, onOk, de
         const template: { [key: string]: any } = {};
         fields.forEach((field: any) => {
             Object.keys(field.mock).forEach((key: string) => {
-                if (typeof field.mock[key] === 'string' && field.mock[key].includes('function')) {
+                if (field.type[0] === 'Function') {
                     // 将字符串转换为函数
                     const funcStr = field.mock[key];
                     const matchResult = funcStr.match(/{(.*)}/s);
@@ -94,7 +94,9 @@ const MockDataGeneratorModal: React.FC<ModalProps> = ({ open, onCancel, onOk, de
                     }
                     const func = new Function('', functionBody);
                     template[key] = func;
-                } else {
+                } else if(field.type[0] === 'RegExp'){
+                    template[key] = new RegExp(field.mock[key]);
+                } else{
                     template[key] = field.mock[key];
                 }
             });
