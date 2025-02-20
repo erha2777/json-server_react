@@ -1,13 +1,14 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { InputNumber, Alert, Row, Col, Tag } from 'antd';
 import Mock from 'mockjs';
+import type { MockDataGeneratorType } from '@/components/MockDataGeneratorModal/index';
 
 type MiscellaneousMode = 'guid' | 'id' | 'increment';
 
 const MiscellaneousMock: React.FC<{
     name: string;
     mock: MiscellaneousMode;
-    onChange?: (mock: Record<string, any>) => void;
+    onChange?: (data: MockDataGeneratorType) => void;
 }> = ({ name, mock, onChange }) => {
     const [state, setState] = useState<{
         step?: number;
@@ -48,7 +49,9 @@ const MiscellaneousMock: React.FC<{
 
     useEffect(() => {
         const rule = generateRule();
-        onChange?.(rule || {});
+        onChange?.({
+            mock: rule || {},
+        });
     }, [generateRule]);
 
     return (

@@ -11,6 +11,7 @@ interface Field {
     alias: string;
     type: string[];
     mock: any;
+    defaultValue: any;
 }
 
 interface tableData {
@@ -24,7 +25,12 @@ interface ModalProps {
     defaultFields?: Field[];
 }
 
-const MockDataGeneratorModal: React.FC<ModalProps> = ({ open, onCancel, onOk, defaultFields}) => {
+export interface MockDataGeneratorType {
+    mock: any;
+    defaultValue?: any;
+}
+
+const MockDataGeneratorModal: React.FC<ModalProps> = ({ open, onCancel, onOk, defaultFields }) => {
     const [fields, setFields] = useState<Field[]>(defaultFields || []);
     const [mockData, setMockData] = useState<tableData>({
         dataSource: [],
@@ -32,9 +38,9 @@ const MockDataGeneratorModal: React.FC<ModalProps> = ({ open, onCancel, onOk, de
     });
 
     const addField = () => {
-        const newField = { name: '', alias: '', type: [], mock: '' };
+        const newField = { name: '', alias: '', type: [], mock: '', defaultValue: '' };
         // 检查字段名称是否重复
-        const isDuplicate = fields.some(field => field.name === newField.name);
+        const isDuplicate = fields.some((field) => field.name === newField.name);
         if (!isDuplicate) {
             setFields([...fields, newField]);
         } else {
@@ -42,7 +48,6 @@ const MockDataGeneratorModal: React.FC<ModalProps> = ({ open, onCancel, onOk, de
             alert('字段名称已存在，请输入不同的名称');
         }
     };
-    
 
     // 删除字段
     const removeField = (index: number) => {
@@ -75,7 +80,23 @@ const MockDataGeneratorModal: React.FC<ModalProps> = ({ open, onCancel, onOk, de
         const template: { [key: string]: any } = {};
         fields.forEach((field: any) => {
             Object.keys(field.mock).forEach((key: string) => {
-                template[key] = field.mock[key];
+                if (typeof field.mock[key] === 'string' && field.mock[key].includes('function')) {
+                    // 将字符串转换为函数
+                    const funcStr = field.mock[key];
+                    const matchResult = funcStr.match(/{(.*)}/s);
+                    let functionBody: string = '';
+                    if (matchResult) {
+                        functionBody = matchResult[1].trim();
+                        // 继续处理functionBody
+                    } else {
+                        console.error('无法提取函数体');
+                        functionBody = '';
+                    }
+                    const func = new Function('', functionBody);
+                    template[key] = func;
+                } else {
+                    template[key] = field.mock[key];
+                }
             });
         });
         console.debug('template', template);
@@ -84,8 +105,8 @@ const MockDataGeneratorModal: React.FC<ModalProps> = ({ open, onCancel, onOk, de
             [`list|${number}`]: [template], // 生成 10 条数据
         }).list;
         console.debug('data', data);
-        if(!Array.isArray(data)) {
-            data = [data]
+        if (!Array.isArray(data)) {
+            data = [data];
         }
         setMockData({
             dataSource: data.map((v: any, i: number) => {
@@ -108,14 +129,14 @@ const MockDataGeneratorModal: React.FC<ModalProps> = ({ open, onCancel, onOk, de
 
     useEffect(() => {
         if (defaultFields) {
-            const newFields = defaultFields.map(field => ({
+            const newFields = defaultFields.map((field) => ({
                 ...field,
-                mock: field.mock // 确保mock属性是可变的
+                mock: field.mock, // 确保mock属性是可变的
             }));
             setFields(newFields);
         }
     }, [defaultFields]);
-    
+
     return (
         <Modal
             title="Mock 数据生成器"
@@ -168,9 +189,11 @@ const MockDataGeneratorModal: React.FC<ModalProps> = ({ open, onCancel, onOk, de
                                 <MockDataGenerator
                                     name={field.name}
                                     mock={field.type}
-                                    onChange={(value) => {
+                                    defaultValue={field.defaultValue}
+                                    onChange={(data: MockDataGeneratorType) => {
                                         const newFields = [...fields];
-                                        newFields[index].mock = value;
+                                        newFields[index].mock = data.mock;
+                                        newFields[index].defaultValue = data.defaultValue;
                                         setFields(newFields);
                                     }}
                                 ></MockDataGenerator>

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { InputNumber, Alert, Tag } from 'antd';
+import type { MockDataGeneratorType } from '@/components/MockDataGeneratorModal/index';
 
 interface MockNumberProps {
     name: string;
     mock: string;
-    onChange?: (mock: any) => void;
+    onChange?: (data: MockDataGeneratorType) => void;
 }
 
 const MockNumber: React.FC<MockNumberProps> = ({ name, mock, onChange }) => {
@@ -53,7 +54,9 @@ const MockNumber: React.FC<MockNumberProps> = ({ name, mock, onChange }) => {
 
     useEffect(() => {
         const { rule, preview } = generateRule();
-        onChange?.(rule);
+        onChange?.({
+            mock: rule,
+        });
         setPreview(preview);
     }, [incrementStart, integerRange, decimalConfig, name, mock]);
 
@@ -176,12 +179,14 @@ const MockNumber: React.FC<MockNumberProps> = ({ name, mock, onChange }) => {
             </div>
             <div style={{ marginTop: 8 }}>
                 <Tag color="geekblue">示例输出</Tag>
-                <div style={{ 
-                    padding: 8,
-                    background: '#fafafa',
-                    borderRadius: 4,
-                    minHeight: 32
-                }}>
+                <div
+                    style={{
+                        padding: 8,
+                        background: '#fafafa',
+                        borderRadius: 4,
+                        minHeight: 32,
+                    }}
+                >
                     {preview || '输入内容后预览'}
                 </div>
             </div>

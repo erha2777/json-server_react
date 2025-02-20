@@ -1,15 +1,17 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Input, Alert, Row, Col, Tag } from 'antd';
+import type { MockDataGeneratorType } from '@/components/MockDataGeneratorModal/index';
 
 type FunctionMode = 'function';
 
 const MockFunction: React.FC<{
     name: string;
     mock: FunctionMode;
-    onChange?: (mock: Record<string, any>) => void;
-}> = ({ name, mock, onChange }) => {
+    onChange?: (data: MockDataGeneratorType) => void;
+    defaultValue: string;
+}> = ({ name, onChange, defaultValue }) => {
     const [state, setState] = useState({
-        functionExpression: '',
+        functionExpression: defaultValue || '',
         error: '',
     });
 
@@ -42,7 +44,10 @@ const MockFunction: React.FC<{
 
     useEffect(() => {
         const rule = generateRule();
-        onChange?.(rule || {});
+        onChange?.({
+            mock: rule || {},
+            defaultValue: state.functionExpression
+        });
     }, [generateRule]);
 
     return (

@@ -1,13 +1,14 @@
 import React, { useCallback, useEffect } from 'react';
 import { Alert, Tag } from 'antd';
 import Mock from 'mockjs';
+import type { MockDataGeneratorType } from '@/components/MockDataGeneratorModal/index';
 
 type AddressMode = 'region' | 'province' | 'city' | 'county';
 
 const AddressMock: React.FC<{
     name: string;
     mock: AddressMode;
-    onChange?: (mock: Record<string, any>) => void;
+    onChange?: (data: MockDataGeneratorType) => void;
 }> = ({ name, mock, onChange }) => {
     const generatePreview = useCallback(() => {
         let preview = '';
@@ -38,7 +39,7 @@ const AddressMock: React.FC<{
 
     useEffect(() => {
         const rule = generateRule();
-        onChange?.(rule || {});
+        onChange?.({ mock: rule || {} });
     }, [generateRule]);
 
     return (

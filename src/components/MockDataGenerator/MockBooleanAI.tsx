@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { InputNumber, Radio, Alert, Tag } from 'antd';
+import type { MockDataGeneratorType } from '@/components/MockDataGeneratorModal/index';
 
 interface MockBooleanProps {
     name: string;
     mock: string;
-    onChange?: (mock: any) => void;
+    onChange?: (data: MockDataGeneratorType) => void;
 }
 
 const MockBoolean: React.FC<MockBooleanProps> = ({ name, mock, onChange }) => {
@@ -38,7 +39,7 @@ const MockBoolean: React.FC<MockBooleanProps> = ({ name, mock, onChange }) => {
     // 更新规则
     const updateRule = () => {
         const rule = generateRule();
-        onChange?.(rule);
+        onChange?.({ mock: rule });
     };
 
     // 监听状态变化，更新规则

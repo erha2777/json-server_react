@@ -29,7 +29,12 @@ export default function TableCard({
                     title: item.alias || item.name,
                     dataIndex: item.name,
                     key: item.name,
-                    render: (text: any) => (text ? text : <span style={{ color: 'red' }}>缺失</span>),
+                    render: (text: any) =>
+                        text ? (
+                            <span>{typeof text === 'string' ? text : JSON.stringify(text)}</span>
+                        ) : (
+                            <span style={{ color: 'red' }}>缺失</span>
+                        ),
                 };
             });
             arr.push({

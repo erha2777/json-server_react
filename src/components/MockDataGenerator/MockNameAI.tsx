@@ -1,13 +1,14 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Input, Alert, Row, Tag } from 'antd';
 import Mock from 'mockjs';
+import type { MockDataGeneratorType } from '@/components/MockDataGeneratorModal/index';
 
 type NameMode = 'cfirst' | 'clast' | 'cname' | 'first' | 'last' | 'name';
 
 const NameMock: React.FC<{
     name: string;
     mock: NameMode;
-    onChange?: (mock: Record<string, any>) => void;
+    onChange?: (data: MockDataGeneratorType) => void;
 }> = ({ name, mock, onChange }) => {
     const [state, setState] = useState<{
         middle: boolean;
@@ -56,7 +57,9 @@ const NameMock: React.FC<{
 
     useEffect(() => {
         const rule = generateRule();
-        onChange?.(rule || {});
+        onChange?.({
+            mock: rule || {},
+        });
     }, [generateRule]);
 
     return (
@@ -70,14 +73,14 @@ const NameMock: React.FC<{
 
             <Row gutter={16} style={{ marginTop: 16 }}>
                 {mock === 'name' && (
-                    <div style={{ display: 'flex', justifyContent: 'center',alignItems:'center' }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                         <Input
                             checked={state.middle}
                             onChange={(e) => handleChange.middle(e.target.checked)}
                             type="checkbox"
                             placeholder="包含中间名"
                         />
-                        <div style={{whiteSpace:'nowrap',marginLeft:'5px'}}>包含中间名</div>
+                        <div style={{ whiteSpace: 'nowrap', marginLeft: '5px' }}>包含中间名</div>
                     </div>
                 )}
             </Row>

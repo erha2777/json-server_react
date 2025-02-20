@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { Input, Select, Alert, Row, Col, Tag, Button, message } from 'antd';
+import { Select, Alert, Tag, Button, message } from 'antd';
 import Mock from 'mockjs';
+import type { MockDataGeneratorType } from '@/components/MockDataGeneratorModal/index';
 
 // 定义颜色格式类型
 type ColorFormat = '@color' | '@hex' | '@rgb' | '@rgba' | '@hsl';
@@ -8,8 +9,8 @@ type ColorFormat = '@color' | '@hex' | '@rgb' | '@rgba' | '@hsl';
 const MockColor: React.FC<{
     name: string;
     mock: ColorFormat;
-    onChange?: (mock: Record<string, any>) => void;
-}> = ({ name, mock, onChange }) => {
+    onChange?: (data: MockDataGeneratorType) => void;
+}> = ({ name, onChange }) => {
     // 状态管理
     const [colorFormat, setColorFormat] = useState<ColorFormat>('@hex');
     const [colorValue, setColorValue] = useState<string>('');
@@ -56,7 +57,9 @@ const MockColor: React.FC<{
         const color = generateColor();
         setColorValue(color);
         const rule = generateRule();
-        onChange?.(rule || {});
+        onChange?.({
+            mock: rule || {},
+        });
     }, [generateColor, generateRule, onChange]);
 
     return (

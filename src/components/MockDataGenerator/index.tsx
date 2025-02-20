@@ -20,15 +20,17 @@ import MockNameAI from './MockNameAI';
 import MockWebAI from './MockWebAI';
 import MockAddressAI from './MockAddressAI';
 import MockMiscellaneousAI from './MockMiscellaneousAI';
+import type { MockDataGeneratorType } from '@/components/MockDataGeneratorModal/index';
 
 interface MockDataGeneratorProps {
     mock: any[];
     name: string;
-    onChange: (mock: any) => void
+    defaultValue: any;
+    onChange: (dara: MockDataGeneratorType) => void;
     // 其他属性
 }
 
-const MockDataGenerator: React.FC<MockDataGeneratorProps> = ({ mock, name, onChange }) => {
+const MockDataGenerator: React.FC<MockDataGeneratorProps> = ({ mock, name, onChange, defaultValue }) => {
     let content;
     if (mock[0] === 'String') {
         content = <MockString mock={mock[1]} name={name} onChange={onChange}></MockString>;
@@ -37,11 +39,11 @@ const MockDataGenerator: React.FC<MockDataGeneratorProps> = ({ mock, name, onCha
     } else if (mock[0] === 'Boolean') {
         content = <MockBoolean mock={mock[1]} name={name} onChange={onChange}></MockBoolean>;
     } else if (mock[0] === 'Object') {
-        content = <MockObject mock={mock[1]} name={name} onChange={onChange}></MockObject>;
+        content = <MockObject mock={mock[1]} name={name} defaultValue={defaultValue} onChange={onChange}></MockObject>;
     } else if (mock[0] === 'Array') {
-        content = <MockArray mock={mock[1]} name={name} onChange={onChange}></MockArray>;
+        content = <MockArray mock={mock[1]} name={name} defaultValue={defaultValue} onChange={onChange}></MockArray>;
     } else if (mock[0] === 'Function') {
-        content = <MockFunctionAI mock={mock[1]} name={name} onChange={onChange}></MockFunctionAI>;
+        content = <MockFunctionAI mock={mock[1]} name={name} defaultValue={defaultValue} onChange={onChange}></MockFunctionAI>;
     } else if (mock[0] === 'Date') {
         content = <MockDateAI mock={mock[1]} name={name} onChange={onChange}></MockDateAI>;
     } else if (mock[0] === 'RegExp') {

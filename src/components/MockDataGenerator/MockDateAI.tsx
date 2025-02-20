@@ -1,13 +1,14 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Input, Alert, Row, Col, Tag } from 'antd';
 import Mock from 'mockjs';
+import type { MockDataGeneratorType } from '@/components/MockDataGeneratorModal/index';
 
 type DateMode = 'date' | 'time' | 'datetime' | 'now';
 
 const MockDate: React.FC<{
     name: string;
     mock: DateMode;
-    onChange?: (mock: Record<string, any>) => void;
+    onChange?: (data: MockDataGeneratorType) => void;
 }> = ({ name, mock, onChange }) => {
     const [state, setState] = useState<{
         datePattern: string;
@@ -78,7 +79,9 @@ const MockDate: React.FC<{
 
     useEffect(() => {
         const rule = generateRule();
-        onChange?.(rule || {});
+        onChange?.({
+            mock: rule || {},
+        });
     }, [generateRule]);
 
     return (
@@ -176,8 +179,8 @@ const MockDate: React.FC<{
             <div style={{ marginTop: 16 }}>
                 <Tag color="blue">规则预览</Tag>
                 <code>
-                    {name} |
-                    @{mock === 'date'
+                    {name} | @
+                    {mock === 'date'
                         ? `date("${state.datePattern}")`
                         : mock === 'time'
                         ? `time("${state.timePattern}")`
