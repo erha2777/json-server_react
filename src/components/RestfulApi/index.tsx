@@ -69,7 +69,7 @@ const RestfulApi: React.FC<ModalProps> = ({ open, onClose, currentApi }) => {
                     </div>
                     <a href='#'>GET {`/${currentApi.tableName}?views_gt=9000&db=${currentApi.dbName}`}</a>
                 </div>
-                <div className="restful-api-desc">范围</div>
+                <div className="restful-api-desc">切片</div>
                 <div className="restful-api-item">
                     <ul>
                         <li>{'start'}</li>
