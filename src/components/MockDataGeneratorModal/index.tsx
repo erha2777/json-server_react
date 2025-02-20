@@ -94,9 +94,15 @@ const MockDataGeneratorModal: React.FC<ModalProps> = ({ open, onCancel, onOk, de
                     }
                     const func = new Function('', functionBody);
                     template[key] = func;
-                } else if(field.type[0] === 'RegExp'){
+                } else if (field.type[0] === 'RegExp') {
                     template[key] = new RegExp(field.mock[key]);
-                } else{
+                } else if (field.type[0] === 'Image') {
+                    template[key] = function () {
+                        return Mock.Random[field.mock[key][0] === 'random' ? 'image' : 'dataImage'](
+                            ...field.mock[key][1]
+                        );
+                    };
+                } else {
                     template[key] = field.mock[key];
                 }
             });

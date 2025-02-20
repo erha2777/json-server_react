@@ -51,7 +51,7 @@ const MockDataGenerator: React.FC<MockDataGeneratorProps> = ({ mock, name, onCha
     } else if (mock[0] === 'Path') {
         content = <MockPathAI mock={mock[1]} name={name} onChange={onChange}></MockPathAI>;
     } else if (mock[0] === 'Image') {
-        content = <MockImageAI mock={mock[1]} name={name} onChange={onChange}></MockImageAI>;
+        content = <MockImageAI mock={mock[1]} name={name} defaultValue={defaultValue} onChange={onChange}></MockImageAI>;
     } else if (mock[0] === 'Color') {
         content = <MockColorAI mock={mock[1]} name={name} onChange={onChange}></MockColorAI>;
     } else if (mock[0] === 'Text') {

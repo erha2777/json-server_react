@@ -19,16 +19,19 @@ const MockImage: React.FC<{
     name: string;
     mock: ImageType;
     onChange?: (data: MockDataGeneratorType) => void;
-}> = ({ name, onChange }) => {
+    defaultValue?: { type: ImageType; params: ImageParams };
+}> = ({ name, onChange, defaultValue }) => {
     // 状态管理
-    const [imageType, setImageType] = useState<ImageType>('random');
-    const [params, setParams] = useState<ImageParams>({
-        size: '200x200',
-        background: '#ffffff',
-        foreground: '#000000',
-        format: 'png',
-        text: 'Random Image',
-    });
+    const [imageType, setImageType] = useState<ImageType>(defaultValue?.type || 'random');
+    const [params, setParams] = useState<ImageParams>(
+        defaultValue?.params || {
+            size: '200x200',
+            background: '#ffffff',
+            foreground: '#000000',
+            format: 'png',
+            text: 'Random Image',
+        }
+    );
 
     // 生成图片地址
     const generateImageURL = useCallback(() => {
@@ -60,10 +63,11 @@ const MockImage: React.FC<{
 
     // 生成规则
     const generateRule = useCallback(() => {
-        const url = generateImageURL();
-        if (!url) return;
+        // const url = generateImageURL();
+        // if (!url) return;
+        const { size, background, foreground, format, text } = params;
         return {
-            [`${name}|${imageType}`]: url,
+            [`${name}`]: [imageType, [size, background, foreground, format, text]],
         };
     }, [name, imageType, generateImageURL]);
 
@@ -72,6 +76,10 @@ const MockImage: React.FC<{
         const rule = generateRule();
         onChange?.({
             mock: rule || {},
+            defaultValue: {
+                type: imageType,
+                params,
+            },
         });
     }, [generateRule]);
 
@@ -149,7 +157,7 @@ const MockImage: React.FC<{
             <div style={{ marginTop: 16 }}>
                 <Tag color="blue">规则预览</Tag>
                 <code>
-                    {name} | {imageType} : "{generateImageURL() || '<空>'}"
+                    {name} : "{generateImageURL() || '<空>'}"
                 </code>
             </div>
 
