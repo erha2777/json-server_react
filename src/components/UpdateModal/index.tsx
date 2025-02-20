@@ -16,7 +16,6 @@ const onFinishFailed: FormProps['onFinishFailed'] = (errorInfo) => {
 };
 const UpdateModal: React.FC<ModalProps> = ({ open, onCancel, onOk, currentDB, data }) => {
     const onFinish: FormProps['onFinish'] = async (values) => {
-        console.log('Success:', values);
         // 关联ID必须为数字，或者是全等
         Object.keys(values).forEach(key=> {
             if(key.includes('Id')) {
@@ -30,7 +29,6 @@ const UpdateModal: React.FC<ModalProps> = ({ open, onCancel, onOk, currentDB, da
                 dbName: currentDB,
                 data: values,
             });
-            console.debug('res', res);
             if (res.status === 200) {
                 message.success('修改成功');
                 onOk({

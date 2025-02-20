@@ -14,7 +14,6 @@ export default function CreateDB() {
     const dispatch = useDispatch();
 
     const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
-        console.log('Success:', values);
         if (values.name) {
             try {
                 const data = await createDatabase({

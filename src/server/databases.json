@@ -4,7 +4,7 @@
       "name": "default",
       "alias": "默认",
       "created_at": "2023-01-01T00:00:00.000Z",
-      "updated_at": "2025-02-20T04:25:34.429Z",
+      "updated_at": "2025-02-20T07:13:50.514Z",
       "tables": {
         "user": {
           "alias": "用户",
@@ -34,37 +34,28 @@
             }
           ]
         },
-        "car": {
-          "alias": "车",
+        "text": {
+          "alias": "text",
           "description": "表的简介",
           "metadata": [
             {
-              "name": "name",
-              "alias": "车名",
+              "name": "text",
+              "alias": "文本",
               "type": [
-                "Array",
-                "1"
+                "String",
+                "min-max"
               ],
               "mock": {
-                "name|1": [
-                  "苹果",
-                  "香蕉",
-                  "橙子"
-                ]
+                "text|1-5": "sss"
               },
-              "defaultValue": "苹果,香蕉,橙子"
-            },
-            {
-              "name": "obj",
-              "alias": "对象",
-              "type": [
-                "Function",
-                "function"
-              ],
-              "mock": {
-                "obj": "function() { return this. name }"
-              },
-              "defaultValue": "return this. name"
+              "defaultValue": {
+                "baseString": "sss",
+                "interval": [
+                  1,
+                  5
+                ],
+                "count": 3
+              }
             }
           ]
         }

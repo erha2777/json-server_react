@@ -23,7 +23,6 @@ const CreatTableModal: React.FC<ModalProps> = ({ open, onCancel, onOk, currentDB
     const dispatch = useDispatch();
 
     const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
-        console.log('Success:', values);
         if (values.name) {
             try {
                 let metadata = {
@@ -35,8 +34,6 @@ const CreatTableModal: React.FC<ModalProps> = ({ open, onCancel, onOk, currentDB
                     tableName: values.name,
                     metadata,
                 });
-                console.debug('createTable', data);
-
                 if (data.status === 200) {
                     dispatch(addTable({ tableName: values.name, metadata }));
                     onOk();
