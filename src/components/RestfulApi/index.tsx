@@ -153,9 +153,15 @@ const RestfulApi: React.FC<ModalProps> = ({ open, onClose, currentApi }) => {
                     <div className="restful-api-item-title">
                         返回{currentApi.dbName}数据库{currentApi.tableName}表中的数据，并将 comments
                         资源嵌入到每个的响应中。（_embed 表示嵌入关联资源。 comments
-                        是要嵌入的资源名称。通过id关联，比如posts和comments表，comment数据里面有个post_id等于post表数据的id）
+                        是要嵌入的资源名称。通过id关联，比如posts和comments表，comment数据里面有个postId等于post表数据的id）
                     </div>
                     <a href='#'>GET {`/${currentApi.tableName}?_embed=comments&db=${currentApi.dbName}`}</a>
+                </div>
+                <div className="restful-api-item">
+                    <div className="restful-api-item-title">
+                        返回{currentApi.dbName}数据库{currentApi.tableName}表中资源的数据，并将每个数据对应的 post 资源嵌入到响应中。
+                    </div>
+                    <a href='#'>GET {`/${currentApi.tableName}?_embed=post&db=${currentApi.dbName}`}</a>
                 </div>
                 <div className="restful-api-title">删除</div>
                 <div className="restful-api-item">

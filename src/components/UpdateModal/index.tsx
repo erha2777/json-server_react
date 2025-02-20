@@ -17,7 +17,12 @@ const onFinishFailed: FormProps['onFinishFailed'] = (errorInfo) => {
 const UpdateModal: React.FC<ModalProps> = ({ open, onCancel, onOk, currentDB, data }) => {
     const onFinish: FormProps['onFinish'] = async (values) => {
         console.log('Success:', values);
-
+        // 关联ID必须为数字，或者是全等
+        Object.keys(values).forEach(key=> {
+            if(key.includes('Id')) {
+                values[key] = parseInt(values[key])
+            }
+        })
         try {
             const res = await updateTableItem({
                 id: data.data.id,
