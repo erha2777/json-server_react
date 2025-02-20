@@ -5,22 +5,25 @@ import type { MockDataGeneratorType } from '@/components/MockDataGeneratorModal/
 // 类型定义
 type StringMode = 'min-max' | 'count';
 type Interval = [number, number];
-
+interface stateType {
+    baseString: string;
+    interval: Interval;
+    count: number;
+}
 const MockString: React.FC<{
     name: string;
     mock: StringMode;
     onChange?: (data: MockDataGeneratorType) => void;
-}> = ({ name, mock, onChange }) => {
+    defaultValue?: stateType;
+}> = ({ name, mock, onChange, defaultValue }) => {
     // 集成化状态管理
-    const [state, setState] = useState<{
-        baseString: string;
-        interval: Interval;
-        count: number;
-    }>({
-        baseString: '',
-        interval: [1, 5], // 默认范围
-        count: 3, // 默认重复次数
-    });
+    const [state, setState] = useState<stateType>(
+        defaultValue || {
+            baseString: '',
+            interval: [1, 5], // 默认范围
+            count: 3, // 默认重复次数
+        }
+    );
 
     // 生成规则预览
     const generatePreview = useCallback(() => {
@@ -76,6 +79,7 @@ const MockString: React.FC<{
         const rule = generateRule();
         onChange?.({
             mock: rule || {},
+            defaultValue: state,
         });
     }, [generateRule]);
 

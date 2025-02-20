@@ -33,7 +33,7 @@ interface MockDataGeneratorProps {
 const MockDataGenerator: React.FC<MockDataGeneratorProps> = ({ mock, name, onChange, defaultValue }) => {
     let content;
     if (mock[0] === 'String') {
-        content = <MockString mock={mock[1]} name={name} onChange={onChange}></MockString>;
+        content = <MockString mock={mock[1]} name={name} defaultValue={defaultValue} onChange={onChange}></MockString>;
     } else if (mock[0] === 'Number') {
         content = <MockNumber mock={mock[1]} name={name} onChange={onChange}></MockNumber>;
     } else if (mock[0] === 'Boolean') {
