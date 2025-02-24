@@ -1,4 +1,9 @@
-# React + TypeScript + Vite
+# mock-json-server
+
+### 项目截图
+<img src="https://pic1.imgdb.cn/item/67bc3c0cd0e0a243d4036f27.png" />
+<img src="https://pic1.imgdb.cn/item/67bc3c0dd0e0a243d4036f2a.png" />
+<img src="https://pic1.imgdb.cn/item/67bc3c0dd0e0a243d4036f2b.png" />
 
 ### 项目功能
 通过node服务器模拟管理多个数据库，支持动态加载、创建、删除和更新数据库，管理表结构，支持数据的增删改查，以及维护数据库和表的元数据。通过json-server提供了一系列RESTful接口，适用于需要模拟接口进行前后端交互开发的场景。
