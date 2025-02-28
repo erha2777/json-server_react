@@ -88,26 +88,25 @@ export default function Database() {
 
     // 删除表数据成功之后更新页面数据
     const deleteItem = (params: { tableName: string; id: string | number }) => {
-        let newData: databaseDataType = JSON.parse(JSON.stringify(database));
-        let item: tableDataType | undefined = newData.tableList.find(
-            (item: tableDataType) => item.name === params.tableName
-        );
-        if (item) {
-            let index = item.data.findIndex((v) => v.id === params.id);
-            if (index !== -1) {
-                item.data.splice(index, 1);
-                setDatabase(newData);
-            }
-        }
+        setDatabase({
+            ...database,
+            tableList: database.tableList.map((table: tableDataType) => {
+                if (table.name === params.tableName) {
+                    return {
+                        ...table,
+                        data: table.data.filter((item) => item.id !== params.id),
+                    };
+                }
+                return table;
+            }),
+        });
     };
     // 删除表成功之后更新页面数据
     const deleteTable = (tableName: string) => {
-        let newData: databaseDataType = JSON.parse(JSON.stringify(database));
-        let index = newData.tableList.findIndex((item: tableDataType) => item.name === tableName);
-        if (index !== -1) {
-            newData.tableList.splice(index, 1);
-            setDatabase(newData);
-        }
+        setDatabase({
+            ...database,
+            tableList: database.tableList.filter((table) => table.name !== tableName),
+        });
     };
 
     // 创建表弹窗相关
@@ -178,16 +177,24 @@ export default function Database() {
         setIsModalOpen3(true);
     };
     const handleOk3 = ({ id, tableName, newData }: { id: string | number; tableName: string; newData: any }) => {
-        let data: databaseDataType = JSON.parse(JSON.stringify(database));
-        let table = data.tableList.find((item: tableDataType) => item.name === tableName);
-        if (table) {
-            let index = table.data.findIndex((item) => item.id === id);
-            if (index !== -1) {
-                table.data[index] = newData;
-                setDatabase(data);
-                setIsModalOpen3(false);
-            }
-        }
+        setDatabase({
+            ...database,
+            tableList: database.tableList.map((table: tableDataType) => {
+                if (table.name === tableName) {
+                    return {
+                        ...table,
+                        data: table.data.map((item) => {
+                            if(item.id === id) {
+                                return newData
+                            } 
+                            return item
+                        }),
+                    };
+                }
+                return table;
+            }),
+        });
+        setIsModalOpen3(false);
     };
     const handleCancel3 = () => {
         setIsModalOpen3(false);
