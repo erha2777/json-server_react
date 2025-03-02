@@ -19,16 +19,11 @@ const databaseSlice = createSlice({
     reducers: {
         // 定义 reducer 和 action
         createDatabase(state, action: PayloadAction<{}>) {// 创建数据库
-            let list = JSON.parse(JSON.stringify(state.list));
-            list.push(action.payload)
-            return {
-                ...state,
-                list,
-                currentDB: action.payload
-            }
+            state.list = [...state.list, action.payload];
+            state.currentDB = action.payload;
         },
         deleteDatabase(state, action: PayloadAction<{ index: number }>) {// 删除数据库
-            state.list.splice(action.payload.index, 1)
+            state.list.splice(action.payload.index, 1);
         },
         setDatabaseList(state, action: PayloadAction<{ list: databaseType[], db?: string }>) { // 设置数据库列表数据
             let list = action.payload.list.map((dbItem: databaseType) => {
@@ -41,39 +36,25 @@ const databaseSlice = createSlice({
                     tables: dbItem.tables || {},
                 }
             })
+            state.list = list;
             // 刷新时设置当前数据库
             if (action.payload.db) {
-                let db = list.find(v => v.name === action.payload.db)
+                let db = list.find(v => v.name === action.payload.db);
                 if (db) {
-                    return {
-                        ...state,
-                        list,
-                        currentDB: db,
-                    }
+                    state.currentDB = db;
                 }
-            }
-            return {
-                ...state,
-                list,
             }
         },
         setCurrentDatabase(state, action: PayloadAction<{ db: string }>) {// 设置当前数据库数据
-            let db = state.list.find(v => v.name === action.payload.db)
+            let db = state.list.find(v => v.name === action.payload.db);
             if (db) {
-                return {
-                    ...state,
-                    currentDB: db,
-                }
+                state.currentDB = db;
             }
         },
         addTable(state, action: PayloadAction<{ tableName: string, metadata: any }>) { // 新增表数据
-            let list = JSON.parse(JSON.stringify(state.list));
-            let currentDB = list.find((v: any) => v.name === state.currentDB.name);
+            let currentDB = state.list.find((v: any) => v.name === state.currentDB.name);
             currentDB.tables[action.payload.tableName] = action.payload.metadata;
-            return {
-                list,
-                currentDB
-            }
+            state.currentDB = currentDB;
         },
     },
 });
