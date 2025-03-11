@@ -1,12 +1,63 @@
 # mock-json-server
 
+### 项目概述：全栈式数据库模拟管理平台
+
+**技术驱动**：基于React + TypeScript的全栈解决方案，实现轻量级数据库服务模拟，为前后端分离开发提供高效协作环境
+**核心价值**：通过可视化界面与RESTful API无缝衔接，赋能开发者快速构建、调试和管理模拟数据服务
+**项目地址**：https://github.com/erha2777/json-server_react（⭐欢迎Star）
+
+------
+
+### 技术架构全景
+
+|    技术领域    |            技术选型            |                     核心作用                     |
+| :------------: | :----------------------------: | :----------------------------------------------: |
+|  **前端框架**  |    React 18 + TypeScript 5     |           构建类型安全的高性能前端应用           |
+|  **状态管理**  | @reduxjs/toolkit + react-redux |   实现全局状态的可预测性管理，简化异步逻辑处理   |
+|  **UI组件库**  |         Ant Design 5.x         |          快速搭建企业级可视化控制台界面          |
+|  **路由管理**  |       react-router-dom 6       |            实现动态路由配置与权限控制            |
+| **开发工具链** |          Vite 4 + SWC          |       毫秒级热更新开发体验，极速构建生产包       |
+|  **数据模拟**  | mockjs 1.1 + json-server 0.17  |          动态生成RESTful API与仿真数据           |
+|  **网络通信**  |    Axios 1.3 + RESTful规范     | 标准化前后端通信协议，实现请求拦截与统一错误处理 |
+
+------
+
+### 系统架构设计
+
+```mermaid
+graph TD
+    A[前端应用] -->|Axios| B[Node服务]
+    B -->|json-server| C[模拟数据库]
+    subgraph 前端架构
+        A --> D[Redux Store]
+        D --> E[Slice管理]
+        A --> F[路由系统]
+        A --> G[AntD组件库]
+    end
+    subgraph 服务架构
+        B --> H[动态路由]
+        B --> I[中间件层]
+        C --> J[Schema管理]
+        C --> K[元数据存储]
+    end
+```
+
+------
+
+### 
+
+### 应用场景
+
+- 🚀 **前端开发沙箱**：在后端未就绪阶段实现完整业务流程开发
+- 🧪 **接口测试平台**：快速构造边界测试用例
+- 🎓 **教学演示系统**：直观展示数据库工作原理
+- 🛠️ **原型验证工具**：快速验证产品概念的最小可行方案
+
 ### 项目截图
 <img src="https://github.com/erha2777/public/blob/main/images/72f082025aafa40f3939948cbb64034f79f019e7.png" />
 <img src="https://github.com/erha2777/public/blob/main/images/7acb0a46f21fbe09add399457b600c338644add6.png" />
 <img src="https://github.com/erha2777/public/blob/main/images/4bed2e738bd4b31c1490ceea97d6277f9e2ff837.png" />
 
-### 项目功能
-通过node服务器模拟管理多个数据库，支持动态加载、创建、删除和更新数据库，管理表结构，支持数据的增删改查，以及维护数据库和表的元数据。通过json-server提供了一系列RESTful接口，适用于需要模拟接口进行前后端交互开发的场景。
 
 ### 运行项目
 #### 运行前端
@@ -19,134 +70,3 @@ npm start
 # src/server
 nodemon server.js
 ```
-
-### 项目依赖
-#### 前端依赖
-```json
-{
-  "dependencies": {
-    "@reduxjs/toolkit": "^2.5.1",
-    "antd": "^5.23.4",
-    "axios": "^1.7.9",
-    "body-parser": "^2.0.1",
-    "mockjs": "^1.1.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "react-redux": "^9.2.0",
-    "react-router-dom": "^7.1.5"
-  },
-  "devDependencies": {
-    "@ant-design/v5-patch-for-react-19": "^1.0.3",
-    "@eslint/js": "^9.19.0",
-    "@types/mockjs": "^1.0.10",
-    "@types/react": "^19.0.8",
-    "@types/react-dom": "^19.0.3",
-    "@vitejs/plugin-react": "^4.3.4",
-    "eslint": "^9.19.0",
-    "eslint-plugin-react-hooks": "^5.0.0",
-    "eslint-plugin-react-refresh": "^0.4.18",
-    "globals": "^15.14.0",
-    "sass": "^1.84.0",
-    "typescript": "~5.7.2",
-    "typescript-eslint": "^8.22.0",
-    "vite": "^6.1.0"
-  }
-}
-```
-#### 服务端依赖
-```json
-{
-  "dependencies": {
-    "json-server": "^0.17.4",
-    "nodemon": "^3.1.9"
-  }
-}
-```
-
-### 项目结构
-vite-react-ts                        
-├─ public                            
-│  └─ vite.svg                       
-├─ src                               
-│  ├─ api                            
-│  │  ├─ database.ts                 
-│  │  └─ table.ts                    
-│  ├─ assets                         
-│  │  └─ react.svg                   
-│  ├─ components                     
-│  │  ├─ AppMenu                     
-│  │  │  ├─ index.scss               
-│  │  │  └─ index.tsx                
-│  │  ├─ CreatTableModal             
-│  │  │  ├─ index.scss               
-│  │  │  └─ index.tsx                
-│  │  ├─ MockDataGenerator           
-│  │  │  ├─ MockAddressAI.tsx        
-│  │  │  ├─ MockArrayAI.tsx          
-│  │  │  ├─ MockBoolean.tsx          
-│  │  │  ├─ MockBooleanAI.tsx        
-│  │  │  ├─ MockColorAI.tsx          
-│  │  │  ├─ MockDateAI.tsx           
-│  │  │  ├─ MockFunctionAI.tsx       
-│  │  │  ├─ MockImageAI.tsx          
-│  │  │  ├─ MockMiscellaneousAI.tsx  
-│  │  │  ├─ MockNameAI.tsx           
-│  │  │  ├─ MockNumber.tsx           
-│  │  │  ├─ MockNumberAI.tsx         
-│  │  │  ├─ MockObject.tsx           
-│  │  │  ├─ MockObjectAI.tsx         
-│  │  │  ├─ MockPathAI.tsx           
-│  │  │  ├─ MockRegExpAI.tsx         
-│  │  │  ├─ MockString.tsx           
-│  │  │  ├─ MockStringAI.tsx         
-│  │  │  ├─ MockTextAI.tsx           
-│  │  │  ├─ MockWebAI.tsx            
-│  │  │  └─ index.tsx                
-│  │  ├─ MockDataGeneratorModal      
-│  │  │  ├─ enum.ts                  
-│  │  │  └─ index.tsx                
-│  │  ├─ RestfulApi                  
-│  │  │  ├─ index.scss               
-│  │  │  └─ index.tsx                
-│  │  ├─ TableCard                   
-│  │  │  ├─ index.scss               
-│  │  │  └─ index.tsx                
-│  │  └─ UpdateModal                 
-│  │     └─ index.tsx                
-│  ├─ routes                         
-│  │  ├─ CreateDB.tsx                
-│  │  ├─ Database.tsx                
-│  │  ├─ Home.tsx                    
-│  │  └─ NotFound.tsx                
-│  ├─ server                         
-│  │  ├─ dbs                         
-│  │  │  ├─ db1.json                 
-│  │  │  ├─ db2.json                 
-│  │  │  └─ default.json             
-│  │  ├─ databases.json              
-│  │  ├─ package-lock.json           
-│  │  ├─ package.json                
-│  │  ├─ server.js                   
-│  │  └─ test.http                   
-│  ├─ store                          
-│  │  ├─ databaseSlice.ts            
-│  │  └─ store.ts                    
-│  ├─ types                          
-│  │  └─ database.ts                 
-│  ├─ utils                          
-│  │  └─ request.ts                  
-│  ├─ App.scss                       
-│  ├─ App.tsx                        
-│  ├─ common.css                     
-│  ├─ main.tsx                       
-│  └─ vite-env.d.ts                  
-├─ README.md                         
-├─ eslint.config.js                  
-├─ index.html                        
-├─ package-lock.json                 
-├─ package.json                      
-├─ tsconfig.app.json                 
-├─ tsconfig.json                     
-├─ tsconfig.node.json                
-└─ vite.config.ts                    
-
