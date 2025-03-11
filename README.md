@@ -4,7 +4,6 @@
 
 **技术驱动**：基于React + TypeScript的全栈解决方案，实现轻量级数据库服务模拟，为前后端分离开发提供高效协作环境
 **核心价值**：通过可视化界面与RESTful API无缝衔接，赋能开发者快速构建、调试和管理模拟数据服务
-**项目地址**：https://github.com/erha2777/json-server_react（⭐欢迎Star）
 
 ------
 
